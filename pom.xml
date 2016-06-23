@@ -13,12 +13,12 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
-    <description>Micro retry library</description>
-    <url>https://github.com</url>
+    <description>Micro retry library for Java8</description>
+    <url>https://github.com/gdiegel/retryJ</url>
     <scm>
-        <connection>scm:git:ssh://git@git.mamdev.server.lan/qa/${project.artifactId}.git</connection>
+        <connection>scm:git:ssh://git@github.com:gdiegel/${project.artifactId}.git</connection>
         <developerConnection>${project.scm.connection}</developerConnection>
-        <url>https://git.mamdev.server.lan/qa/${project.artifactId}}</url>
+        <url>https://github.com/gdiegel/${project.artifactId}</url>
         <tag>HEAD</tag>
     </scm>
     <developers>
@@ -35,6 +35,13 @@
     </developers>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
