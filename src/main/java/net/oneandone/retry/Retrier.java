@@ -6,6 +6,8 @@ import java.util.concurrent.Callable;
 
 /**
  * Created by gdiegel on 6/14/16.
+ *
+ * Thanks to Ray Holder, Jean-Baptiste Nizet
  */
 public interface Retrier<T> {
 
