@@ -1,0 +1,6 @@
+image: docker.mamdev.server.lan/mamido/ci-runner:latest
+
+variables:
+      maven-build:
+            script:
+                - mvn -U clean deploy
