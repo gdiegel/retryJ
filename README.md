@@ -1,6 +1,6 @@
 # retryJ - A micro retry library for Java8
 
-```
+```java
 final Retrier<Double> retrier = Retrier.<Double>builder()
     .withInterval(100, ChronoUnit.NANOS)
     .withTimeout(10, ChronoUnit.SECONDS)
