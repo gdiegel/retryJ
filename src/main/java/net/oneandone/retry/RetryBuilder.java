@@ -1,5 +1,6 @@
 package net.oneandone.retry;
 
+import com.google.common.base.Throwables;
 import net.oneandone.exception.RetriesExhaustedException;
 import net.oneandone.exception.RetryException;
 import org.slf4j.Logger;
@@ -16,75 +17,77 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static java.time.LocalTime.now;
 import static java.time.temporal.ChronoUnit.MILLIS;
-import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class RetrierBuilder<T> {
+public class RetryBuilder<T> {
 
-    private static final Duration DEFAULT_TIMEOUT = Duration.of(1, MINUTES);
+    private static final Duration DEFAULT_TIMEOUT = Duration.of(30, SECONDS);
     private static final Duration DEFAULT_INTERVAL = Duration.of(100, MILLIS);
-    private static final long DEFAULT_RETRY_TIMES = 600;
+    private static final long DEFAULT_RETRY_TIMES = 300;
 
     private Predicate<Exception> throwCondition = exception -> false;
-    private Predicate<? extends T> retryCondition = k -> false;
+    private Predicate<T> retryCondition = k -> false;
     private Duration timeout;
     private Duration interval = DEFAULT_INTERVAL;
     private long times;
 
-    public Retrier<T> build() {
-        return new RetrierImpl<>(this);
+    public Retry<T> build() {
+        return new RetryImpl<>(this);
     }
 
-    public RetrierBuilder<T> withTimeout(long duration, ChronoUnit chronoUnit) {
-        checkArgument(duration >= 0, "duration '" + duration + "'");
-        checkNotNull(chronoUnit, "chronoUnit");
-        return withTimeout(Duration.of(duration, chronoUnit));
+    public RetryBuilder<T> withTimeout(long duration, ChronoUnit unit) {
+        checkArgument(duration >= 0, "Duration: [" + duration + "]");
+        checkNotNull(unit, "unit");
+        return withTimeout(Duration.of(duration, unit));
     }
 
-    public RetrierBuilder<T> withTimeout(Duration timeout) {
+    public RetryBuilder<T> withTimeout(Duration timeout) {
         checkNotNull(timeout, "timeout");
+        checkArgument(timeout.getNano() >= 0, "Timeout: [" + timeout + "]");
         this.timeout = timeout;
         return this;
     }
 
-    public RetrierBuilder<T> withInterval(Duration duration) {
-        checkArgument(duration.getNano() >= 0, "duration '" + duration + "'");
-        this.interval = duration;
+    public RetryBuilder<T> withInterval(Duration interval) {
+        checkNotNull(interval, "timeout");
+        checkArgument(interval.getNano() >= 0, "Duration: [" + interval + "]");
+        this.interval = interval;
         return this;
     }
 
-    public RetrierBuilder<T> withInterval(long duration, ChronoUnit chronoUnit) {
-        checkArgument(duration >= 0, "duration '" + duration + "'");
-        checkNotNull(chronoUnit, "chronoUnit");
-        return withInterval(Duration.of(duration, chronoUnit));
+    public RetryBuilder<T> withInterval(long duration, ChronoUnit unit) {
+        checkArgument(duration >= 0, "Duration: [" + duration + "]");
+        checkNotNull(unit, "unit");
+        return withInterval(Duration.of(duration, unit));
     }
 
-    public RetrierBuilder<T> withRetries(int times) {
-        checkArgument(times >= 0, "times '" + times + "'");
+    public RetryBuilder<T> withRetries(int times) {
+        checkArgument(times >= 0, "Retries: [" + times + "]");
         this.times = times;
         return this;
     }
 
-    public RetrierBuilder<T> retryOnException(Predicate<Exception> throwCondition) {
+    public RetryBuilder<T> retryOnException(Predicate<Exception> throwCondition) {
         checkNotNull(throwCondition, "throwCondition");
         this.throwCondition = throwCondition;
         return this;
     }
 
-    public RetrierBuilder<T> retryUntil(Predicate<? extends T> stopCondition) {
+    public RetryBuilder<T> retryUntil(Predicate<T> stopCondition) {
         checkNotNull(stopCondition, "stopCondition");
         return retryOn(stopCondition.negate());
     }
 
-    public RetrierBuilder<T> retryOn(Predicate<? extends T> retryCondition) {
+    public RetryBuilder<T> retryOn(Predicate<T> retryCondition) {
         checkNotNull(retryCondition, "retryCondition");
         this.retryCondition = retryCondition;
         return this;
     }
 
-    private static final class RetrierImpl<K> implements Retrier<K> {
+    private static final class RetryImpl<K> implements Retry<K> {
 
-        private static final Logger LOG = getLogger(RetrierImpl.class);
+        private static final Logger LOG = getLogger(RetryImpl.class);
 
         private final Duration interval;
         private final Duration timeout;
@@ -94,41 +97,54 @@ public class RetrierBuilder<T> {
         private long left;
         private LocalTime startTime;
 
-        private RetrierImpl(RetrierBuilder retrierBuilder) {
-            this.timeout = retrierBuilder.timeout != null ? retrierBuilder.timeout : DEFAULT_TIMEOUT;
-            this.times = retrierBuilder.times != 0 ? retrierBuilder.times : DEFAULT_RETRY_TIMES;
-            this.interval = retrierBuilder.interval;
+        private RetryImpl(RetryBuilder<K> retryBuilder) {
+            this.timeout = retryBuilder.timeout != null ? retryBuilder.timeout : DEFAULT_TIMEOUT;
+            this.times = retryBuilder.times != 0 ? retryBuilder.times : DEFAULT_RETRY_TIMES;
+            this.interval = retryBuilder.interval;
             this.left = times;
-            this.throwCondition = retrierBuilder.throwCondition;
-            this.retryCondition = retrierBuilder.retryCondition;
+            this.throwCondition = retryBuilder.throwCondition;
+            this.retryCondition = retryBuilder.retryCondition;
             LOG.info(this.toString());
         }
 
         @Override
-        public final K call(Callable<K> task) throws RetryException {
-            if (startTime == null) {
-                startTime = now();
-                LOG.debug("Start time: " + startTime.toString());
-            }
-            final boolean exhausted = isExhausted();
-            LOG.debug("Exhausted: {}", exhausted);
+        public K call(Callable<K> task) throws RetryException {
+            String m = "No retries left or time is up";
+            checkStartTime();
             try {
                 final K taskResult = task.call();
-                LOG.debug("Returning task result of type: {}", taskResult.getClass());
-                final boolean isRetryConditionSatisfied = retryCondition.test(taskResult);
+                LOG.debug("Task result is of type: {}", taskResult.getClass());
                 LOG.debug(taskResult.toString());
+                LOG.debug("Exhausted: {}", isExhausted());
+                if (isExhausted()) {
+                    LOG.info(m);
+                    throw new RetriesExhaustedException(m);
+                }
+                final boolean isRetryConditionSatisfied = retryCondition.test(taskResult);
                 LOG.debug("Retry condition satisfied: {}", isRetryConditionSatisfied);
-                if (!exhausted && isRetryConditionSatisfied) {
+                if (isRetryConditionSatisfied) {
                     return retry(task);
                 }
                 return taskResult;
             } catch (Exception exception) {
+                Throwables.propagateIfInstanceOf(exception, RetriesExhaustedException.class);
                 final boolean isThrowConditionSatisfied = throwCondition.test(exception);
                 LOG.debug("Throw condition satisfied: {}", isThrowConditionSatisfied);
-                if (!exhausted && isThrowConditionSatisfied) {
+                if (isExhausted()) {
+                    LOG.info(m, exception);
+                    throw new RetriesExhaustedException(m, exception);
+                }
+                if (isThrowConditionSatisfied) {
                     return retry(task);
                 }
-                throw new RetriesExhaustedException("Exhausted all retries", exception);
+                throw new RetryException(exception);
+            }
+        }
+
+        private void checkStartTime() {
+            if (startTime == null) {
+                startTime = now();
+                LOG.debug("Start time: " + startTime.toString());
             }
         }
 
@@ -150,7 +166,7 @@ public class RetrierBuilder<T> {
 
         @Override
         public String toString() {
-            return "Retrier{" +
+            return "Retry{" +
                     "interval=" + interval +
                     ", timeout=" + timeout +
                     ", throwCondition=" + throwCondition +
@@ -162,6 +178,5 @@ public class RetrierBuilder<T> {
         }
     }
 }
-
 
 

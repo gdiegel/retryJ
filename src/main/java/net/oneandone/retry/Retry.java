@@ -9,10 +9,10 @@ import java.util.concurrent.Callable;
  *
  * Thanks to Ray Holder, Jean-Baptiste Nizet
  */
-public interface Retrier<T> {
+public interface Retry<T> {
 
-    static <T> RetrierBuilder<T> builder() {
-        return new RetrierBuilder<>();
+    static <T> RetryBuilder<T> builder() {
+        return new RetryBuilder<>();
     }
 
     /**

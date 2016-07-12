@@ -6,7 +6,7 @@
     <parent>
         <groupId>net.oneandone.maven.poms</groupId>
         <artifactId>foss-parent</artifactId>
-        <version>1.5.2</version>
+        <version>1.5.9</version>
     </parent>
     <groupId>net.oneandone.lib</groupId>
     <artifactId>retryJ</artifactId>
@@ -16,7 +16,7 @@
     <description>Micro retry library for Java8</description>
     <url>https://github.com/gdiegel/retryJ</url>
     <scm>
-        <connection>scm:git:ssh://git@github.com:gdiegel/${project.artifactId}.git</connection>
+        <connection>scm:git:ssh://git@github.com/gdiegel/${project.artifactId}.git</connection>
         <developerConnection>${project.scm.connection}</developerConnection>
         <url>https://github.com/gdiegel/${project.artifactId}</url>
         <tag>HEAD</tag>
