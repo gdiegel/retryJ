@@ -26,7 +26,7 @@ public class RetryTest {
     public void canRetryUntilPredicateEvaluatesToTrue() {
         final Retry<Double> retry = Retry.<Double>builder()
                 .withInterval(100, ChronoUnit.NANOS)
-                .withTimeout(10, ChronoUnit.SECONDS)
+                .withTimeout(1, ChronoUnit.MINUTES)
                 .retryOnException(e -> e.getClass().equals(NumberFormatException.class))
                 .retryUntil(d -> d <= 0.01).build();
         assertThat(retry.call(Math::random)).isLessThan(0.01);
@@ -72,6 +72,16 @@ public class RetryTest {
     }
 
     @Test
+    public void mustNotThrowRetriesExhaustedExceptionWhenSilencedAndTimeUp() {
+        final Retry<Integer> retry = Retry.<Integer>builder()
+                .silently()
+                .withRetries(600)
+                .withTimeout(1, ChronoUnit.SECONDS)
+                .retryUntil(o -> 1 == 2).build();
+        retry.call(() -> 1);
+    }
+
+    @Test
     public void shouldThrowRetriesExhaustedExceptionWhenRetriesUp() {
         final Retry<Integer> retry = Retry.<Integer>builder()
                 .withInterval(10, ChronoUnit.MILLIS)
@@ -79,6 +89,17 @@ public class RetryTest {
                 .withTimeout(60, ChronoUnit.SECONDS)
                 .retryUntil(o -> 1 == 2).build();
         assertThatThrownBy(() -> retry.call(() -> 1)).isExactlyInstanceOf(RetriesExhaustedException.class);
+    }
+
+    @Test
+    public void mustNotThrowRetriesExhaustedExceptionWhenSilencedAndRetriesUp() {
+        final Retry<Integer> retry = Retry.<Integer>builder()
+                .silently()
+                .withInterval(10, ChronoUnit.MILLIS)
+                .withRetries(10)
+                .withTimeout(60, ChronoUnit.SECONDS)
+                .retryUntil(o -> 1 == 2).build();
+        retry.call(() -> 1);
     }
 
     private class ThrowOnceThenSucceed {
