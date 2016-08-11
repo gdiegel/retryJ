@@ -33,7 +33,7 @@ public class RetryTest {
     }
 
     @Test
-    public void canRetryOnPredicateEvalutatingToTrue() {
+    public void canRetryOnPredicateEvaluatingToTrue() {
         StringProvider sp = new StringProvider();
         final Retry<Character> retry = Retry.<Character>builder()
                 .withTimeout(10, ChronoUnit.SECONDS)

@@ -22,9 +22,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class RetryBuilder<T> {
 
-    public static final String DURATION_FORMAT = "Duration: [%s]";
-    public static final String TIMEOUT_FORMAT = "Timeout: [%s]";
-    public static final String RETRIES_FORMAT = "Retries: [%s]";
+    private static final String DURATION_FORMAT = "Duration: [%s]";
+    private static final String TIMEOUT_FORMAT = "Timeout: [%s]";
+    private static final String RETRIES_FORMAT = "Retries: [%s]";
     private Predicate<Exception> throwCondition = exception -> false;
     private Predicate<T> retryCondition = k -> false;
     private Duration timeout = Duration.of(30, SECONDS);
@@ -119,7 +119,7 @@ public class RetryBuilder<T> {
 
         @Override
         public K call(Callable<K> task) throws RetryException {
-            String m = "No retries left or time is up";
+            final String m = "No retries left or time is up";
             checkStartTime();
             try {
                 final K taskResult = task.call();
