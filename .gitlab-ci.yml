@@ -1,4 +1,0 @@
-image: docker.mamdev.server.lan/mamido/ci-runner:latest
-
-maven-build:
-    script: "mvn -U clean verify"
