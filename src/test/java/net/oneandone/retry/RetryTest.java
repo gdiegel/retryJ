@@ -2,7 +2,7 @@ package net.oneandone.retry;
 
 import net.oneandone.exception.RetriesExhaustedException;
 import net.oneandone.exception.RetryException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
