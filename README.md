@@ -1,4 +1,4 @@
-# retryJ - A micro retry library for Java8
+# retryJ - A micro retry library for Java11
 
 ```java
 final Retry<Double> retry = Retry.<Double>builder()

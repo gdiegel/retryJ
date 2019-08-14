@@ -13,7 +13,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
-    <description>Micro retry library for Java8</description>
+    <description>Micro retry library for Java11</description>
     <url>https://github.com/gdiegel/retryJ</url>
     <scm>
         <connection>scm:git:ssh://git@github.com/gdiegel/${project.artifactId}.git</connection>
