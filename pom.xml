@@ -8,7 +8,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
-    <description>Micro retry library for Java15</description>
+    <description>Micro retry library for Java 15</description>
     <url>https://github.com/gdiegel/retryJ</url>
     <scm>
         <connection>scm:git:ssh://git@github.com/gdiegel/${project.artifactId}.git</connection>
@@ -20,8 +20,8 @@
         <developer>
             <id>gdiegel</id>
             <name>Gabriel Diegel</name>
-            <email>gabriel.diegel@1und1.de</email>
-            <organization>1&amp;1 Internet AG</organization>
+            <email>gabriel.diegel@tektonlabs.com</email>
+            <organization>Tekton Labs</organization>
             <timezone>1</timezone>
             <roles>
                 <role>developer</role>
