@@ -1,11 +1,9 @@
 package net.oneandone.retry;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
-import static java.lang.String.format;
-import static java.time.LocalTime.now;
-import static org.slf4j.LoggerFactory.getLogger;
+import com.google.common.base.Throwables;
+import net.oneandone.exception.RetriesExhaustedException;
+import net.oneandone.exception.RetryException;
+import org.slf4j.Logger;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -14,12 +12,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import org.slf4j.Logger;
-
-import com.google.common.base.Throwables;
-
-import net.oneandone.exception.RetriesExhaustedException;
-import net.oneandone.exception.RetryException;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static java.lang.String.format;
+import static java.time.LocalTime.now;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class RetryBuilder<T> {
 
@@ -228,15 +226,15 @@ public class RetryBuilder<T> {
         @Override
         public String toString() {
             return "Retry {" +
-                "interval: " + interval +
-                ", timeout: " + timeout +
-                ", throwCondition: " + throwCondition +
-                ", retryCondition: " + retryCondition +
-                ", silent: " + silent +
-                ", retries: " + retries +
-                ", left: " + left +
-                ", startTime: " + startTime +
-                '}';
+                    "interval: " + interval +
+                    ", timeout: " + timeout +
+                    ", throwCondition: " + throwCondition +
+                    ", retryCondition: " + retryCondition +
+                    ", silent: " + silent +
+                    ", retries: " + retries +
+                    ", left: " + left +
+                    ", startTime: " + startTime +
+                    '}';
         }
     }
 }

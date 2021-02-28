@@ -1,5 +1,11 @@
 package net.oneandone.retry;
 
+import net.oneandone.exception.RetriesExhaustedException;
+import net.oneandone.exception.RetryException;
+import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.Callable;
+
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.NANOS;
@@ -7,13 +13,6 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
-
-import java.util.concurrent.Callable;
-
-import org.junit.jupiter.api.Test;
-
-import net.oneandone.exception.RetriesExhaustedException;
-import net.oneandone.exception.RetryException;
 
 class RetryIT {
 
@@ -106,7 +105,7 @@ class RetryIT {
         assertThatCode(() -> retry.call(() -> 1)).doesNotThrowAnyException();
     }
 
-    private class ThrowOnceThenSucceed {
+    private static class ThrowOnceThenSucceed {
         private boolean thrown = false;
 
         String invoke() {
@@ -119,12 +118,12 @@ class RetryIT {
         }
     }
 
-    private class StringProvider {
-        private final String start = "abcdef";
+    private static class StringProvider {
+        private static final String START = "abcdef";
         private int pos = 0;
 
         char getNextChar() {
-            return start.toCharArray()[pos++];
+            return START.toCharArray()[pos++];
         }
     }
 }
