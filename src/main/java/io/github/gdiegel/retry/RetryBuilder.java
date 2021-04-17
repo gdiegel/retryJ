@@ -4,7 +4,6 @@ import io.github.gdiegel.exception.RetriesExhaustedException;
 import org.jetbrains.annotations.Contract;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.function.Predicate;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -27,8 +26,8 @@ public class RetryBuilder<T> {
      */
     private Predicate<T> stopCondition = (T t) -> false;
 
-    private Duration timeout = Duration.of(30, ChronoUnit.SECONDS);
-    private Duration interval = Duration.ZERO;
+    private Duration timeout = Duration.ofSeconds(10);
+    private Duration interval = Duration.ofMillis(10);
 
     private long maxRetries = -1;
     private boolean silent = false;
