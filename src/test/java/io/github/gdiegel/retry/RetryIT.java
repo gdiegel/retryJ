@@ -4,6 +4,7 @@ import io.github.gdiegel.exception.RetriesExhaustedException;
 import io.github.gdiegel.exception.RetryException;
 import org.junit.jupiter.api.Test;
 
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 import static java.time.temporal.ChronoUnit.MILLIS;
@@ -18,14 +19,29 @@ class RetryIT {
 
     @Test
     void canRetryOnce() {
-        final int i = 0;
-        final Retry<Integer> retry = Retry.<Integer>builder().withRetries(1).build();
-        assertThat(retry.call(() -> i + 1)).isEqualTo(1);
+        final InvocationCounter invocationCounter = new InvocationCounter();
+        final var retries = 1;
+        final var retry = Retry.<Integer>builder()
+                .silently()
+                .withRetries(retries)
+                .retryOn(a -> a < Integer.MAX_VALUE).build();
+        assertThat(retry.call(invocationCounter::invoke)).as("One original invocation and one retry").isEqualTo(2);
+    }
+
+    @Test
+    void canRetryTwice() {
+        final InvocationCounter invocationCounter = new InvocationCounter();
+        final var retries = 2;
+        final var retry = Retry.<Integer>builder()
+                .silently()
+                .withRetries(retries)
+                .retryOn(a -> a < Integer.MAX_VALUE).build();
+        assertThat(retry.call(invocationCounter::invoke)).as("One original invocation and two retries").isEqualTo(3);
     }
 
     @Test
     void canRetryUntilPredicateEvaluatesToTrue() {
-        final Retry<Double> retry = Retry.<Double>builder()
+        final var retry = Retry.<Double>builder()
                 .withInterval(100, NANOS)
                 .withTimeout(1, MINUTES)
                 .retryOnException(e -> e.getClass().equals(NumberFormatException.class))
@@ -35,28 +51,28 @@ class RetryIT {
 
     @Test
     void canRetryOnPredicateEvalutatingToTrue() {
-        final StringProvider sp = new StringProvider();
-        final Retry<Character> retry = Retry.<Character>builder()
+        final var sp = new StringProvider();
+        final var retry = Retry.<Character>builder()
                 .withTimeout(10, SECONDS)
                 .retryOn(c -> !c.equals('d')).build();
-        final Character call = retry.call(sp::getNextChar);
+        final var call = retry.call(sp::getNextChar);
         assertThat(call).isEqualTo('d');
     }
 
     @Test
     void canRetryOnException() {
-        final ThrowOnceThenSucceed tots = new ThrowOnceThenSucceed();
-        final Retry<String> retry = Retry.<String>builder()
+        final var tots = new ThrowOnceThenSucceed();
+        final var retry = Retry.<String>builder()
                 .withTimeout(10, SECONDS)
                 .withRetries(2)
-                .retryOnException(e -> e.getClass().equals(RuntimeException.class)).build();
+                .retryOnException(e -> Objects.equals(e.getClass(), RuntimeException.class)).build();
         assertThat(retry.call(tots::invoke)).isEqualTo("Yippie!");
     }
 
     @SuppressWarnings({"divzero", "NumericOverflow"})
     @Test
     void shouldThrowRetryExceptionOnUnexpectedException() {
-        final Retry<Integer> retry = Retry.<Integer>builder()
+        final var retry = Retry.<Integer>builder()
                 .withTimeout(10, SECONDS)
                 .retryOnException(e -> e.getClass().equals(RuntimeException.class)).build();
         final Callable<Integer> causesException = () -> 1 / 0;
@@ -66,7 +82,7 @@ class RetryIT {
 
     @Test
     void shouldThrowRetriesExhaustedExceptionWhenTimeUp() {
-        final Retry<Integer> retry = Retry.<Integer>builder()
+        final var retry = Retry.<Integer>builder()
                 .withRetries(600)
                 .withTimeout(1, SECONDS)
                 .retryUntil(o -> false).build();
@@ -75,7 +91,7 @@ class RetryIT {
 
     @Test
     void mustNotThrowRetriesExhaustedExceptionWhenSilencedAndTimeUp() {
-        final Retry<Integer> retry = Retry.<Integer>builder()
+        final var retry = Retry.<Integer>builder()
                 .silently()
                 .withRetries(600)
                 .withTimeout(1, SECONDS)
@@ -86,7 +102,7 @@ class RetryIT {
 
     @Test
     void shouldThrowRetriesExhaustedExceptionWhenRetriesUp() {
-        final Retry<Integer> retry = Retry.<Integer>builder()
+        final var retry = Retry.<Integer>builder()
                 .withInterval(10, MILLIS)
                 .withRetries(10)
                 .withTimeout(60, SECONDS)
@@ -96,7 +112,7 @@ class RetryIT {
 
     @Test
     void mustNotThrowRetriesExhaustedExceptionWhenSilencedAndRetriesUp() {
-        final Retry<Integer> retry = Retry.<Integer>builder()
+        final var retry = Retry.<Integer>builder()
                 .silently()
                 .withInterval(10, MILLIS)
                 .withRetries(10)
@@ -115,6 +131,15 @@ class RetryIT {
                 thrown = true;
                 throw new RuntimeException("Pow!");
             }
+        }
+    }
+
+    private static class InvocationCounter {
+        int invocations = 0;
+
+        int invoke() {
+            invocations++;
+            return invocations;
         }
     }
 
