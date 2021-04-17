@@ -11,8 +11,8 @@ class RetryTest {
 
     @Test
     void canUseRetryBuilderRetries() {
-        final var builder = Retry.builder().withRetries(1).build();
-        assertThat(builder.getRetries()).isEqualTo(1);
+        final var builder = Retry.builder().withMaxRetries(1).build();
+        assertThat(builder.getMaxRetries()).isEqualTo(1);
     }
 
     @Test

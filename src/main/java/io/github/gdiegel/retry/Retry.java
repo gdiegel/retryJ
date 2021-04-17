@@ -6,12 +6,16 @@ import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 
 /**
- * Created by gdiegel on 6/14/16.
+ * An instance of {@link Retry} allows retrying a {@link Callable} invocation as many
+ * times as necessary until a timeout occurs, the configured number of retries is exhausted,
+ * a not previously allowed exception occurs or a stop condition is satisfied.
  *
- * Thanks to Ray Holder, Jean-Baptiste Nizet
+ * Thanks to Ray Holder, Jean-Baptiste Nizet for the inspiration.
  */
 public interface Retry<T> {
 
+    @org.jetbrains.annotations.NotNull
+    @org.jetbrains.annotations.Contract(" -> new")
     static <T> RetryBuilder<T> builder() {
         return new RetryBuilder<>();
     }
@@ -20,11 +24,11 @@ public interface Retry<T> {
 
     Duration getTimeout();
 
-    Predicate<Exception> getThrowCondition();
+    Predicate<Exception> getIgnorableException();
 
-    Predicate<T> getRetryCondition();
+    Predicate<T> getStopCondition();
 
-    long getRetries();
+    long getMaxRetries();
 
     boolean isSilent();
 
