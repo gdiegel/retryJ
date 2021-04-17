@@ -15,7 +15,7 @@ import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterrup
 import static java.time.LocalTime.now;
 import static org.slf4j.LoggerFactory.getLogger;
 
-public final class DefaultRetry<K> implements Retry<K> {
+public final class DefaultRetry<RESULT> implements Retry<RESULT> {
 
     private static final Logger LOG = getLogger(DefaultRetry.class);
     private static final String NO_RETRIES_LEFT_OR_TIME_IS_UP = "No retries left or time is up";
@@ -24,21 +24,21 @@ public final class DefaultRetry<K> implements Retry<K> {
     private final Duration timeout;
 
     private final Predicate<Exception> ignorableException;
-    private final Predicate<K> stopCondition;
+    private final Predicate<RESULT> stopCondition;
 
     private final long maxRetries;
     private final boolean silent;
-    private long left;
 
+    private long left;
     private LocalTime startTime;
 
-    public DefaultRetry(RetryBuilder<K> retryBuilder) {
-        this.timeout = retryBuilder.getTimeout();
-        this.maxRetries = retryBuilder.getMaxRetries();
-        this.interval = retryBuilder.getInterval();
-        this.ignorableException = retryBuilder.getIgnorableException();
-        this.stopCondition = retryBuilder.getStopCondition();
-        this.silent = retryBuilder.isSilent();
+    public DefaultRetry(Duration interval, Duration timeout, Predicate<Exception> ignorableException, Predicate<RESULT> stopCondition, long maxRetries, boolean silent) {
+        this.interval = interval;
+        this.timeout = timeout;
+        this.ignorableException = ignorableException;
+        this.stopCondition = stopCondition;
+        this.maxRetries = maxRetries;
+        this.silent = silent;
         this.left = maxRetries;
     }
 
@@ -54,7 +54,7 @@ public final class DefaultRetry<K> implements Retry<K> {
         return ignorableException;
     }
 
-    public Predicate<K> getStopCondition() {
+    public Predicate<RESULT> getStopCondition() {
         return stopCondition;
     }
 
@@ -75,7 +75,7 @@ public final class DefaultRetry<K> implements Retry<K> {
     }
 
     @Override
-    public K call(Callable<K> task) {
+    public RESULT call(Callable<RESULT> task) {
         checkStartTime();
         try {
             final var taskResult = task.call();
@@ -114,7 +114,7 @@ public final class DefaultRetry<K> implements Retry<K> {
         }
     }
 
-    private K retry(Callable<K> task) {
+    private RESULT retry(Callable<RESULT> task) {
         LOG.debug("Sleeping for {}", interval);
         if (interval.getSeconds() != 0) {
             sleepUninterruptibly(interval.getSeconds(), TimeUnit.SECONDS);

@@ -34,7 +34,7 @@ public class RetryBuilder<T> {
     private boolean silent = false;
 
     public Retry<T> build() {
-        return new DefaultRetry<>(this);
+        return new DefaultRetry<>(this.interval, this.timeout, this.ignorableException, this.stopCondition, this.maxRetries, this.silent);
     }
 
     /**
@@ -84,29 +84,4 @@ public class RetryBuilder<T> {
         this.stopCondition = stopCondition;
         return this;
     }
-
-    Predicate<Exception> getIgnorableException() {
-        return ignorableException;
-    }
-
-    Predicate<T> getStopCondition() {
-        return stopCondition;
-    }
-
-    Duration getTimeout() {
-        return timeout;
-    }
-
-    Duration getInterval() {
-        return interval;
-    }
-
-    long getMaxRetries() {
-        return maxRetries;
-    }
-
-    boolean isSilent() {
-        return silent;
-    }
-
 }

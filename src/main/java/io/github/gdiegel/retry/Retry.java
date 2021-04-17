@@ -12,11 +12,11 @@ import java.util.function.Predicate;
  *
  * Thanks to Ray Holder, Jean-Baptiste Nizet for the inspiration.
  */
-public interface Retry<T> {
+public interface Retry<RESULT> {
 
     @org.jetbrains.annotations.NotNull
     @org.jetbrains.annotations.Contract(" -> new")
-    static <T> RetryBuilder<T> builder() {
+    static <RESULT> RetryBuilder<RESULT> builder() {
         return new RetryBuilder<>();
     }
 
@@ -26,7 +26,7 @@ public interface Retry<T> {
 
     Predicate<Exception> getIgnorableException();
 
-    Predicate<T> getStopCondition();
+    Predicate<RESULT> getStopCondition();
 
     long getMaxRetries();
 
@@ -37,10 +37,10 @@ public interface Retry<T> {
     LocalTime getStartTime();
 
     /**
-     * Retry the execution wrapped in {@link Callable} when the specified condition matched.
+     * Retry the execution wrapped in {@link Callable}.
      *
      * @param retryableTask the retryable task
      * @return the return value of the callable
      */
-    T call(Callable<T> retryableTask);
+    RESULT call(Callable<RESULT> retryableTask);
 }
