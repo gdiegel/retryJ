@@ -18,13 +18,24 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 class RetryIT {
 
     @Test
+    void canRetryZeroTimes() {
+        final InvocationCounter invocationCounter = new InvocationCounter();
+        final var retries = 0;
+        final var retry = Retry.<Integer>builder()
+                .silently()
+                .withRetries(retries)
+                .retryOn(shouldRetry -> true).build();
+        assertThat(retry.call(invocationCounter::invoke)).as("One original invocation only").isEqualTo(1);
+    }
+
+    @Test
     void canRetryOnce() {
         final InvocationCounter invocationCounter = new InvocationCounter();
         final var retries = 1;
         final var retry = Retry.<Integer>builder()
                 .silently()
                 .withRetries(retries)
-                .retryOn(a -> a < Integer.MAX_VALUE).build();
+                .retryOn(shouldRetry -> true).build();
         assertThat(retry.call(invocationCounter::invoke)).as("One original invocation and one retry").isEqualTo(2);
     }
 
@@ -35,7 +46,7 @@ class RetryIT {
         final var retry = Retry.<Integer>builder()
                 .silently()
                 .withRetries(retries)
-                .retryOn(a -> a < Integer.MAX_VALUE).build();
+                .retryOn(shouldRetry -> true).build();
         assertThat(retry.call(invocationCounter::invoke)).as("One original invocation and two retries").isEqualTo(3);
     }
 

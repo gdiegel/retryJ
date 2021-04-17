@@ -100,6 +100,7 @@ public class RetryBuilder<T> {
     private static final class RetryImpl<K> implements Retry<K> {
 
         private static final Logger LOG = getLogger(RetryImpl.class);
+        private static final String NO_RETRIES_LEFT_OR_TIME_IS_UP = "No retries left or time is up";
 
         private final Duration interval;
         private final Duration timeout;
@@ -157,7 +158,6 @@ public class RetryBuilder<T> {
 
         @Override
         public K call(Callable<K> task) {
-            final var m = "No retries left or time is up";
             checkStartTime();
             try {
                 final var taskResult = task.call();
@@ -166,11 +166,11 @@ public class RetryBuilder<T> {
                     LOG.debug("Exhausted: {}", isExhausted());
                 }
                 if (isExhausted()) {
-                    LOG.info(m);
+                    LOG.info(NO_RETRIES_LEFT_OR_TIME_IS_UP);
                     if (silent) {
                         return taskResult;
                     } else {
-                        throw new RetriesExhaustedException(m);
+                        throw new RetriesExhaustedException(NO_RETRIES_LEFT_OR_TIME_IS_UP);
                     }
                 }
                 final var isRetryConditionSatisfied = retryCondition.test(taskResult);
@@ -184,9 +184,9 @@ public class RetryBuilder<T> {
                 final var isThrowConditionSatisfied = throwCondition.test(exception);
                 LOG.debug("Throw condition satisfied: {}", isThrowConditionSatisfied);
                 if (isExhausted()) {
-                    LOG.info(m, exception);
+                    LOG.info(NO_RETRIES_LEFT_OR_TIME_IS_UP, exception);
                     if (!silent) {
-                        throw new RetriesExhaustedException(m, exception);
+                        throw new RetriesExhaustedException(NO_RETRIES_LEFT_OR_TIME_IS_UP, exception);
                     }
                 }
                 if (isThrowConditionSatisfied) {
