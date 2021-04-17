@@ -1,4 +1,4 @@
-package net.oneandone.exception;
+package io.github.gdiegel.exception;
 
 /**
  * Created by gdiegel on 6/23/16.

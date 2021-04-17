@@ -1,7 +1,7 @@
-package net.oneandone.retry;
+package io.github.gdiegel.retry;
 
-import net.oneandone.exception.RetriesExhaustedException;
-import net.oneandone.exception.RetryException;
+import io.github.gdiegel.exception.RetriesExhaustedException;
+import io.github.gdiegel.exception.RetryException;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.Callable;

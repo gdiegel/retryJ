@@ -1,4 +1,4 @@
-package net.oneandone.retry;
+package io.github.gdiegel.retry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

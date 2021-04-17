@@ -1,4 +1,4 @@
-package net.oneandone.retry;
+package io.github.gdiegel.retry;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -11,6 +11,10 @@ import java.util.function.Predicate;
  * Thanks to Ray Holder, Jean-Baptiste Nizet
  */
 public interface Retry<T> {
+
+    static <T> RetryBuilder<T> builder() {
+        return new RetryBuilder<>();
+    }
 
     Duration getInterval();
 
@@ -27,10 +31,6 @@ public interface Retry<T> {
     long getLeft();
 
     LocalTime getStartTime();
-
-    static <T> RetryBuilder<T> builder() {
-        return new RetryBuilder<>();
-    }
 
     /**
      * Retry the execution wrapped in {@link Callable} when the specified condition matched.

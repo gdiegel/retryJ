@@ -1,8 +1,8 @@
-package net.oneandone.retry;
+package io.github.gdiegel.retry;
 
 import com.google.common.base.Throwables;
-import net.oneandone.exception.RetriesExhaustedException;
-import net.oneandone.exception.RetryException;
+import io.github.gdiegel.exception.RetriesExhaustedException;
+import io.github.gdiegel.exception.RetryException;
 import org.slf4j.Logger;
 
 import java.time.Duration;
@@ -113,6 +113,16 @@ public class RetryBuilder<T> {
 
         private LocalTime startTime;
 
+        private RetryImpl(RetryBuilder<K> retryBuilder) {
+            this.timeout = retryBuilder.timeout != null ? retryBuilder.timeout : Duration.of(30, ChronoUnit.SECONDS);
+            this.retries = retryBuilder.retries;
+            this.interval = retryBuilder.interval;
+            this.left = retries;
+            this.throwCondition = retryBuilder.throwCondition;
+            this.retryCondition = retryBuilder.retryCondition;
+            this.silent = retryBuilder.silent;
+        }
+
         public Duration getInterval() {
             return interval;
         }
@@ -143,16 +153,6 @@ public class RetryBuilder<T> {
 
         public LocalTime getStartTime() {
             return startTime;
-        }
-
-        private RetryImpl(RetryBuilder<K> retryBuilder) {
-            this.timeout = retryBuilder.timeout != null ? retryBuilder.timeout : Duration.of(30, ChronoUnit.SECONDS);
-            this.retries = retryBuilder.retries;
-            this.interval = retryBuilder.interval;
-            this.left = retries;
-            this.throwCondition = retryBuilder.throwCondition;
-            this.retryCondition = retryBuilder.retryCondition;
-            this.silent = retryBuilder.silent;
         }
 
         @Override
