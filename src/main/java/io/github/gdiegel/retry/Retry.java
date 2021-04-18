@@ -2,6 +2,7 @@ package io.github.gdiegel.retry;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 
@@ -28,11 +29,9 @@ public interface Retry<RESULT> {
 
     Predicate<RESULT> getStopCondition();
 
-    long getMaxRetries();
+    long getMaxExecutions();
 
-    boolean isSilent();
-
-    long getLeft();
+    boolean isThrowing();
 
     LocalTime getStartTime();
 
@@ -42,5 +41,5 @@ public interface Retry<RESULT> {
      * @param retryableTask the retryable task
      * @return the return value of the callable
      */
-    RESULT call(Callable<RESULT> retryableTask);
+    Optional<RESULT> call(Callable<RESULT> retryableTask);
 }

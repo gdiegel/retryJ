@@ -29,21 +29,21 @@ public class RetryBuilder<T> {
     private Duration timeout = Duration.ofSeconds(10);
     private Duration interval = Duration.ofMillis(10);
 
-    private long maxRetries = -1;
-    private boolean silent = false;
+    private long maxExecutions = -1;
+    private boolean throwing = false;
 
     public Retry<T> build() {
-        return new DefaultRetry<>(this.interval, this.timeout, this.ignorableException, this.stopCondition, this.maxRetries, this.silent);
+        return new DefaultRetry<>(this.interval, this.timeout, this.ignorableException, this.stopCondition, this.maxExecutions, this.throwing);
     }
 
     /**
-     * Don't throw {@link RetriesExhaustedException}
+     * Throw {@link RetriesExhaustedException} instead fo returning the result when retries are exhausted.
      *
      * @return self
      */
     @Contract(" -> this")
-    public RetryBuilder<T> silently() {
-        this.silent = true;
+    public RetryBuilder<T> throwing() {
+        this.throwing = true;
         return this;
     }
 
@@ -64,9 +64,9 @@ public class RetryBuilder<T> {
     }
 
     @Contract("_ -> this")
-    public RetryBuilder<T> withMaxRetries(int maxRetries) {
-        checkArgument(maxRetries >= 0, format(RETRIES_FORMAT, maxRetries));
-        this.maxRetries = maxRetries;
+    public RetryBuilder<T> withMaxExecutions(long maxExecutions) {
+        checkArgument(maxExecutions >= 0, format(RETRIES_FORMAT, maxExecutions));
+        this.maxExecutions = maxExecutions;
         return this;
     }
 

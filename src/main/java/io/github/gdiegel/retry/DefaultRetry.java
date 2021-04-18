@@ -1,14 +1,14 @@
 package io.github.gdiegel.retry;
 
-import com.google.common.base.Throwables;
 import io.github.gdiegel.exception.RetriesExhaustedException;
 import io.github.gdiegel.exception.RetryException;
 import org.slf4j.Logger;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
@@ -18,7 +18,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public final class DefaultRetry<RESULT> implements Retry<RESULT> {
 
     private static final Logger LOG = getLogger(DefaultRetry.class);
-    private static final String NO_RETRIES_LEFT_OR_TIME_IS_UP = "No retries left or time is up";
+    private static final String RETRIES_OR_EXECUTIONS_EXHAUSTED = "Retries or executions exhausted";
 
     private final Duration interval;
     private final Duration timeout;
@@ -26,20 +26,19 @@ public final class DefaultRetry<RESULT> implements Retry<RESULT> {
     private final Predicate<Exception> ignorableException;
     private final Predicate<RESULT> stopCondition;
 
-    private final long maxRetries;
-    private final boolean silent;
+    private final long maxExecutions;
+    private final boolean throwing;
 
-    private long left;
+    private final AtomicLong currentExecutions = new AtomicLong(0);
     private LocalTime startTime;
 
-    public DefaultRetry(Duration interval, Duration timeout, Predicate<Exception> ignorableException, Predicate<RESULT> stopCondition, long maxRetries, boolean silent) {
+    public DefaultRetry(Duration interval, Duration timeout, Predicate<Exception> ignorableException, Predicate<RESULT> stopCondition, long maxExecutions, boolean throwing) {
         this.interval = interval;
         this.timeout = timeout;
         this.ignorableException = ignorableException;
         this.stopCondition = stopCondition;
-        this.maxRetries = maxRetries;
-        this.silent = silent;
-        this.left = maxRetries;
+        this.maxExecutions = maxExecutions;
+        this.throwing = throwing;
     }
 
     public Duration getInterval() {
@@ -58,86 +57,72 @@ public final class DefaultRetry<RESULT> implements Retry<RESULT> {
         return stopCondition;
     }
 
-    public long getMaxRetries() {
-        return maxRetries;
+    public long getMaxExecutions() {
+        return maxExecutions;
     }
 
-    public boolean isSilent() {
-        return silent;
-    }
-
-    public long getLeft() {
-        return left;
+    public boolean isThrowing() {
+        return throwing;
     }
 
     public LocalTime getStartTime() {
         return startTime;
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
-    public RESULT call(Callable<RESULT> task) {
-        checkStartTime();
+    public Optional<RESULT> call(Callable<RESULT> callable) {
+        if (maxExecutions == 0) {
+            return Optional.empty();
+        }
+        setStartTime();
+        LOG.debug(this.toString());
+        Optional<RESULT> result;
+        do {
+            result = doCall(callable);
+            sleepUninterruptibly(interval);
+            if (result.isPresent() && stopCondition.test(result.get())) {
+                break;
+            }
+        } while (!exhausted());
+        return result;
+    }
+
+    private Optional<RESULT> doCall(Callable<RESULT> callable) {
+        Optional<RESULT> call = Optional.empty();
         try {
-            final var taskResult = task.call();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Task result {type: {}, value: {}}", taskResult.getClass(), taskResult);
-                LOG.debug("Exhausted: {}", isExhausted());
+            currentExecutions.incrementAndGet();
+            call = Optional.of(callable.call());
+        } catch (Exception e) {
+            if (!ignorableException.test(e)) {
+                throw new RetryException(e);
             }
-            if (isExhausted()) {
-                LOG.info(NO_RETRIES_LEFT_OR_TIME_IS_UP);
-                if (silent) {
-                    return taskResult;
-                } else {
-                    throw new RetriesExhaustedException(NO_RETRIES_LEFT_OR_TIME_IS_UP);
-                }
-            }
-            final var isStopConditionSatisfied = stopCondition.test(taskResult);
-            LOG.debug("Stop condition satisfied: {}", isStopConditionSatisfied);
-            if (!isStopConditionSatisfied) {
-                return retry(task);
-            }
-            return taskResult;
-        } catch (Exception exception) {
-            Throwables.throwIfInstanceOf(exception, RetriesExhaustedException.class);
-            final var isThrowConditionSatisfied = ignorableException.test(exception);
-            LOG.debug("Throw condition satisfied: {}", isThrowConditionSatisfied);
-            if (isExhausted()) {
-                LOG.info(NO_RETRIES_LEFT_OR_TIME_IS_UP, exception);
-                if (!silent) {
-                    throw new RetriesExhaustedException(NO_RETRIES_LEFT_OR_TIME_IS_UP, exception);
-                }
-            }
-            if (isThrowConditionSatisfied) {
-                return retry(task);
-            }
-            throw new RetryException(exception);
         }
+        return call;
     }
 
-    private RESULT retry(Callable<RESULT> task) {
-        LOG.debug("Sleeping for {}", interval);
-        if (interval.getSeconds() != 0) {
-            sleepUninterruptibly(interval.getSeconds(), TimeUnit.SECONDS);
-        } else {
-            sleepUninterruptibly(interval.getNano(), TimeUnit.NANOSECONDS);
+    private boolean exhausted() {
+        final boolean exhausted = executionsExhausted() || timeExhausted();
+        if (exhausted && throwing) {
+            throw new RetriesExhaustedException(RETRIES_OR_EXECUTIONS_EXHAUSTED);
         }
-        if (left > 0) {
-            left--;
-        }
-        LOG.debug("Attempts left: {}", left);
-        return call(task);
+        return exhausted;
     }
 
-    private boolean isExhausted() {
-        return left == 0 || now().isAfter(startTime.plus(timeout));
+    private boolean timeExhausted() {
+        return now().isAfter(startTime.plus(timeout));
     }
 
-    private void checkStartTime() {
+    private boolean executionsExhausted() {
+        if (maxExecutions <= 0) {
+            return false;
+        }
+        return currentExecutions.get() == maxExecutions;
+    }
+
+    private void setStartTime() {
         if (startTime == null) {
             startTime = now();
-            if (LOG.isInfoEnabled()) {
-                LOG.info(toString());
-            }
         }
     }
 
@@ -146,11 +131,9 @@ public final class DefaultRetry<RESULT> implements Retry<RESULT> {
         return "Retry {" +
                 "interval: " + interval +
                 ", timeout: " + timeout +
-                ", ignorableExcetion: " + ignorableException +
-                ", stopCondition: " + stopCondition +
-                ", silent: " + silent +
-                ", maxRetries: " + maxRetries +
-                ", left: " + left +
+                ", silent: " + throwing +
+                ", maxExecutions: " + maxExecutions +
+                ", currentExecutions: " + currentExecutions.get() +
                 ", startTime: " + startTime +
                 '}';
     }
