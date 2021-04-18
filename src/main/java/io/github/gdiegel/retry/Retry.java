@@ -1,10 +1,7 @@
 package io.github.gdiegel.retry;
 
-import java.time.Duration;
-import java.time.LocalTime;
 import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.function.Predicate;
 
 /**
  * An instance of {@link Retry} allows retrying a {@link Callable} invocation as many
@@ -15,25 +12,9 @@ import java.util.function.Predicate;
  */
 public interface Retry<RESULT> {
 
-    @org.jetbrains.annotations.NotNull
-    @org.jetbrains.annotations.Contract(" -> new")
-    static <RESULT> RetryBuilder<RESULT> builder() {
-        return new RetryBuilder<>();
+    static <RESULT> Retry<RESULT> with(RetryPolicy<RESULT> retryPolicy) {
+        return new DefaultRetry<>(retryPolicy);
     }
-
-    Duration getInterval();
-
-    Duration getTimeout();
-
-    Predicate<Exception> getIgnorableException();
-
-    Predicate<RESULT> getStopCondition();
-
-    long getMaxExecutions();
-
-    boolean isThrowing();
-
-    LocalTime getStartTime();
 
     /**
      * Retry the execution wrapped in {@link Callable}.

@@ -2,24 +2,20 @@ package io.github.gdiegel.retry;
 
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-class RetryTest {
+class RetryPolicyBuilderTest {
 
     @Test
-    void canUseRetryBuilderRetries() {
-        final var builder = Retry.builder().withMaxExecutions(1).build();
-        assertThat(builder.getMaxExecutions()).isEqualTo(1);
+    void canCreateBuilderFromRetryPolicy() {
+        final RetryPolicyBuilder<Integer> builder = RetryPolicy.builder();
+        assertThat(builder).isNotNull();
     }
 
     @Test
-    void canUseRetryBuilder() {
-        final var fortyFiveSeconds = Duration.of(45, ChronoUnit.SECONDS);
-        final var builder = Retry.builder().withInterval(fortyFiveSeconds).build();
-        assertThat(builder.getInterval()).isEqualByComparingTo(fortyFiveSeconds);
+    void canCreateBuilderFromRetryPolicyBuilder() {
+        final RetryPolicyBuilder<Integer> builder = RetryPolicyBuilder.instance();
+        assertThat(builder).isNotNull();
     }
 
 }
