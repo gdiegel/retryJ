@@ -2,9 +2,10 @@
 
 ```java
 final Retry<Double> retry = Retry.<Double>builder()
-    .withInterval(100, ChronoUnit.NANOS)
-    .withTimeout(10, ChronoUnit.SECONDS)
-    .retryOnException(e -> e.getClass().equals(NumberFormatException.class))
-    .retryUntil(d -> d <= 0.01).build();
-final Double result = retry.call(Math::random);
+        .withInterval(Duration.of(100, NANOS))
+        .withTimeout(Duration.of(1, MINUTES))
+        .retryWhenException(e -> e.getClass().equals(NumberFormatException.class))
+        .retryUntil(d -> d <= 0.01)
+        .build();
+final Optional<Double> call = retry.call(Math::random);
 ```
