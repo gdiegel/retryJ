@@ -17,12 +17,12 @@ public class RetryBuilder<RESULT> {
     private static final String RETRIES_FORMAT = "Retries: [%s]";
 
     /**
-     * Defaults to false, i.e. no exception will be ignored. In other words, every exception will break the retry chain.
+     * Defaults to false, i.e. no exception will be ignored, or in other words, every exception will break the execution chain.
      */
     private Predicate<Exception> ignorableException = exception -> false;
     /**
-     * Defaults to false, retries will be performed until exhausted, i.e. the given timeout is reached
-     * or the given maximum number of retries have been performed.
+     * Defaults to false, retries will be performed until exhausted, i.e. the given timeout is reached or the given maximum
+     * number of executions have been performed.
      */
     private Predicate<RESULT> stopCondition = result -> false;
 
@@ -37,7 +37,7 @@ public class RetryBuilder<RESULT> {
     }
 
     /**
-     * Throw {@link RetriesExhaustedException} instead fo returning the result when retries are exhausted.
+     * Throw {@link RetriesExhaustedException} instead of returning the result when retries are exhausted.
      *
      * @return self
      */

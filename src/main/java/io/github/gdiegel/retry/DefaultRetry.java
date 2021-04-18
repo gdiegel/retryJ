@@ -72,12 +72,12 @@ public final class DefaultRetry<RESULT> implements Retry<RESULT> {
     @SuppressWarnings("UnstableApiUsage")
     @Override
     public Optional<RESULT> call(Callable<RESULT> callable) {
+        Optional<RESULT> result = Optional.empty();
         if (maxExecutions == 0) {
-            return Optional.empty();
+            return result;
         }
         setStartTime();
         LOG.debug(this.toString());
-        Optional<RESULT> result;
         do {
             result = doCall(callable);
             sleepUninterruptibly(interval);
