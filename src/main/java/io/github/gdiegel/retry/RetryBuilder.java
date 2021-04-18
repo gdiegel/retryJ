@@ -10,7 +10,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
-public class RetryBuilder<T> {
+public class RetryBuilder<RESULT> {
 
     private static final String DURATION_FORMAT = "Duration: [%s]";
     private static final String TIMEOUT_FORMAT = "Timeout: [%s]";
@@ -19,12 +19,12 @@ public class RetryBuilder<T> {
     /**
      * Defaults to false, i.e. no exception will be ignored. In other words, every exception will break the retry chain.
      */
-    private Predicate<Exception> ignorableException = (Exception exception) -> false;
+    private Predicate<Exception> ignorableException = exception -> false;
     /**
      * Defaults to false, retries will be performed until exhausted, i.e. the given timeout is reached
      * or the given maximum number of retries have been performed.
      */
-    private Predicate<T> stopCondition = (T t) -> false;
+    private Predicate<RESULT> stopCondition = result -> false;
 
     private Duration timeout = Duration.ofSeconds(10);
     private Duration interval = Duration.ofMillis(10);
@@ -32,7 +32,7 @@ public class RetryBuilder<T> {
     private long maxExecutions = -1;
     private boolean throwing = false;
 
-    public Retry<T> build() {
+    public Retry<RESULT> build() {
         return new DefaultRetry<>(this.interval, this.timeout, this.ignorableException, this.stopCondition, this.maxExecutions, this.throwing);
     }
 
@@ -42,13 +42,13 @@ public class RetryBuilder<T> {
      * @return self
      */
     @Contract(" -> this")
-    public RetryBuilder<T> throwing() {
+    public RetryBuilder<RESULT> throwing() {
         this.throwing = true;
         return this;
     }
 
     @Contract("_ -> this")
-    public RetryBuilder<T> withTimeout(Duration timeout) {
+    public RetryBuilder<RESULT> withTimeout(Duration timeout) {
         checkNotNull(timeout, "timeout");
         checkArgument(timeout.getNano() >= 0, format(TIMEOUT_FORMAT, timeout));
         this.timeout = timeout;
@@ -56,7 +56,7 @@ public class RetryBuilder<T> {
     }
 
     @Contract("_ -> this")
-    public RetryBuilder<T> withInterval(Duration interval) {
+    public RetryBuilder<RESULT> withInterval(Duration interval) {
         checkNotNull(interval, "timeout");
         checkArgument(interval.getNano() >= 0, format(DURATION_FORMAT, interval));
         this.interval = interval;
@@ -64,21 +64,21 @@ public class RetryBuilder<T> {
     }
 
     @Contract("_ -> this")
-    public RetryBuilder<T> withMaxExecutions(long maxExecutions) {
+    public RetryBuilder<RESULT> withMaxExecutions(long maxExecutions) {
         checkArgument(maxExecutions >= 0, format(RETRIES_FORMAT, maxExecutions));
         this.maxExecutions = maxExecutions;
         return this;
     }
 
     @Contract("_ -> this")
-    public RetryBuilder<T> retryWhenException(Predicate<Exception> ignorableException) {
+    public RetryBuilder<RESULT> retryWhenException(Predicate<Exception> ignorableException) {
         checkNotNull(ignorableException, "ignorableException");
         this.ignorableException = ignorableException;
         return this;
     }
 
     @Contract("_ -> this")
-    public RetryBuilder<T> retryUntil(Predicate<T> stopCondition) {
+    public RetryBuilder<RESULT> retryUntil(Predicate<RESULT> stopCondition) {
         checkNotNull(stopCondition, "stopCondition");
         this.stopCondition = stopCondition;
         return this;
