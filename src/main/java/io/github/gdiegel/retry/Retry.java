@@ -4,11 +4,11 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
- * An instance of {@link Retry} allows retrying a {@link Callable} invocation as many
- * times as necessary until a timeout occurs, the configured number of retries is exhausted,
- * a not previously allowed exception occurs or a stop condition is satisfied.
+ * An instance of {@link Retry} allows executing a {@link Callable} as many
+ * times as necessary until either a timeout occurs, the configured number of executions is exhausted,
+ * a not previously allowed exception is thrown or a stop condition is satisfied.
  *
- * Thanks to Ray Holder, Jean-Baptiste Nizet for the inspiration.
+ * Thanks to Ray Holder, Jean-Baptiste Nizet, Jonathan Halterman for the inspiration.
  */
 public interface Retry<RESULT> {
 

@@ -2,21 +2,18 @@ package io.github.gdiegel.retry;
 
 import io.github.gdiegel.exception.RetriesExhaustedException;
 import io.github.gdiegel.exception.RetryException;
-import org.slf4j.Logger;
 
 import java.time.LocalTime;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static java.time.LocalTime.now;
-import static org.slf4j.LoggerFactory.getLogger;
 
 public final class DefaultRetry<RESULT> implements Retry<RESULT> {
 
-    private static final Logger LOG = getLogger(DefaultRetry.class);
     private static final String RETRIES_OR_EXECUTIONS_EXHAUSTED = "Retries or executions exhausted";
 
     private final RetryPolicy<RESULT> retryPolicy;
@@ -28,7 +25,6 @@ public final class DefaultRetry<RESULT> implements Retry<RESULT> {
         this.retryPolicy = retryPolicy;
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     @Override
     public Optional<RESULT> call(Callable<RESULT> callable) {
         Optional<RESULT> result = Optional.empty();
@@ -36,10 +32,9 @@ public final class DefaultRetry<RESULT> implements Retry<RESULT> {
             return result;
         }
         setStartTime();
-        LOG.debug(this.toString());
         do {
             result = doCall(callable);
-            sleepUninterruptibly(retryPolicy.getInterval());
+            sleep();
             if (result.isPresent() && retryPolicy.getStopCondition().test(result.get())) {
                 break;
             }
@@ -82,6 +77,14 @@ public final class DefaultRetry<RESULT> implements Retry<RESULT> {
     private void setStartTime() {
         if (startTime == null) {
             startTime = now();
+        }
+    }
+
+    private void sleep() {
+        try {
+            TimeUnit.NANOSECONDS.sleep(retryPolicy.getInterval().toNanos());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 

@@ -15,8 +15,6 @@ public class RetryPolicy<RESULT> {
     private final long maximumExecutions;
     private final boolean throwing;
 
-    @org.jetbrains.annotations.NotNull
-    @org.jetbrains.annotations.Contract(" -> new")
     public static <RESULT> RetryPolicyBuilder<RESULT> builder() {
         return new RetryPolicyBuilder<>();
     }

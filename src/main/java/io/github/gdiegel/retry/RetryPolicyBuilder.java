@@ -1,7 +1,6 @@
 package io.github.gdiegel.retry;
 
 import io.github.gdiegel.exception.RetriesExhaustedException;
-import org.jetbrains.annotations.Contract;
 
 import java.time.Duration;
 import java.util.function.Predicate;
@@ -60,13 +59,11 @@ public class RetryPolicyBuilder<RESULT> {
      *
      * @return self
      */
-    @Contract(" -> this")
     public RetryPolicyBuilder<RESULT> throwing() {
         this.throwing = true;
         return this;
     }
 
-    @Contract("_ -> this")
     public RetryPolicyBuilder<RESULT> withTimeout(Duration timeout) {
         checkNotNull(timeout, "timeout");
         checkArgument(timeout.getNano() >= 0, format(TIMEOUT_FORMAT, timeout));
@@ -74,7 +71,6 @@ public class RetryPolicyBuilder<RESULT> {
         return this;
     }
 
-    @Contract("_ -> this")
     public RetryPolicyBuilder<RESULT> withInterval(Duration interval) {
         checkNotNull(interval, "timeout");
         checkArgument(interval.getNano() >= 0, format(INTERVAL_FORMAT, interval));
@@ -82,21 +78,18 @@ public class RetryPolicyBuilder<RESULT> {
         return this;
     }
 
-    @Contract("_ -> this")
     public RetryPolicyBuilder<RESULT> withMaxExecutions(long maxExecutions) {
         checkArgument(maxExecutions >= 0, format(MAXIMUM_EXECUTIONS_FORMAT, maxExecutions));
         this.maximumExecutions = maxExecutions;
         return this;
     }
 
-    @Contract("_ -> this")
     public RetryPolicyBuilder<RESULT> retryWhenException(Predicate<Exception> ignorableException) {
         checkNotNull(ignorableException, "ignorableException");
         this.ignorableException = ignorableException;
         return this;
     }
 
-    @Contract("_ -> this")
     public RetryPolicyBuilder<RESULT> retryUntil(Predicate<RESULT> stopCondition) {
         checkNotNull(stopCondition, "stopCondition");
         this.stopCondition = stopCondition;
