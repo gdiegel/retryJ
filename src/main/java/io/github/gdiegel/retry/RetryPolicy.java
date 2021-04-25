@@ -22,10 +22,6 @@ public class RetryPolicy<RESULT> {
     private final long maximumExecutions;
     private final boolean throwing;
 
-    public static <RESULT> RetryPolicyBuilder<RESULT> builder() {
-        return new RetryPolicyBuilder<>();
-    }
-
     public RetryPolicy(Duration interval, Duration timeout, Predicate<Exception> ignorableException, Predicate<RESULT> stopCondition, long maximumExecutions, boolean throwing) {
         this.interval = interval;
         this.timeout = timeout;
@@ -33,6 +29,10 @@ public class RetryPolicy<RESULT> {
         this.stopCondition = stopCondition;
         this.maximumExecutions = maximumExecutions;
         this.throwing = throwing;
+    }
+
+    public static <RESULT> RetryPolicyBuilder<RESULT> builder() {
+        return new RetryPolicyBuilder<>();
     }
 
     public Duration getInterval() {

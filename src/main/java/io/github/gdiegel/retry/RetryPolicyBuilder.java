@@ -9,6 +9,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
+/**
+ * Allows fluently building a {@link RetryPolicy<RESULT>} using sensible defaults.
+ *
+ * @param <RESULT> the type of the result of the computation
+ * @author Gabriel Diegel
+ */
 public class RetryPolicyBuilder<RESULT> {
 
     private static final String INTERVAL_FORMAT = "Interval: [%s]";
@@ -19,6 +25,7 @@ public class RetryPolicyBuilder<RESULT> {
      * Default: False, i.e. no exception will be ignored, in other words, any exception will break the execution chain.
      */
     private Predicate<Exception> ignorableException = exception -> false;
+
     /**
      * Default: False, will retry until exhausted, i.e. the given timeout is reached or the given maximum
      * number of executions have been performed.
@@ -46,7 +53,7 @@ public class RetryPolicyBuilder<RESULT> {
      */
     private boolean throwing = false;
 
-    public static <RESULT> RetryPolicyBuilder<RESULT> instance(){
+    public static <RESULT> RetryPolicyBuilder<RESULT> instance() {
         return new RetryPolicyBuilder<>();
     }
 
