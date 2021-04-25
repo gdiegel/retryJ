@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.NANOS;
@@ -20,7 +21,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 class RetryIT {
 
     @Test
-    void shouldReturnNullWhenZeroExecutionsAreConfigured() {
+    void shouldReturnEmptyOptionalWhenZeroExecutionsAreConfigured() {
         final InvocationCounter invocationCounter = new InvocationCounter();
         final var retryPolicy = RetryPolicy.<Long>builder()
                 .withMaxExecutions(0L)
@@ -31,7 +32,7 @@ class RetryIT {
     }
 
     @Test
-    void shouldBeAbleToExecuteOnce() {
+    void shouldReturnResultWhenOneExecutionIsConfigured() {
         final InvocationCounter invocationCounter = new InvocationCounter();
         final var executions = 1L;
         final var retryPolicy = RetryPolicy.<Long>builder()
@@ -66,6 +67,7 @@ class RetryIT {
         assertThat(Retry.with(retryPolicy).call(invocationCounter::invoke))
                 .as("100000 original invocations")
                 .contains(executions);
+        assertThat(invocationCounter.invocations.get()).isEqualTo(executions);
     }
 
     @Test
@@ -163,11 +165,10 @@ class RetryIT {
     }
 
     private static class InvocationCounter {
-        private long invocations = 0L;
+        private final AtomicLong invocations = new AtomicLong(0L);
 
         long invoke() {
-            invocations++;
-            return invocations;
+            return invocations.incrementAndGet();
         }
     }
 
