@@ -12,6 +12,14 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static java.time.LocalTime.now;
 
+/**
+ * Default implementation of {@link Retry}. An instance of {@link DefaultRetry} allows executing a {@link Callable} as many
+ * times as necessary until either a timeout occurs, the configured number of executions is exhausted,
+ * a not previously allowed exception is thrown or a stop condition is satisfied.
+ *
+ * @param <RESULT> type of the result
+ * @author Gabriel Diegel
+ */
 public final class DefaultRetry<RESULT> implements Retry<RESULT> {
 
     private static final String RETRIES_OR_EXECUTIONS_EXHAUSTED = "Retries or executions exhausted";
