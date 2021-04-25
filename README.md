@@ -19,20 +19,21 @@ final Optional<Double> result = Retry.with(retryPolicy).call(Math::random);
 
 ```java
 private static class ThrowOnceThenSucceed {
-        private boolean thrown = false;
+    private boolean thrown = false;
 
-        String invoke() {
-            if (thrown) {
-                return "Yippie!";
-            } else {
-                thrown = true;
-                throw new RuntimeException("Pow!");
-            }
+    String invoke() {
+        if (thrown) {
+            return "Yippie!";
+        } else {
+            thrown = true;
+            throw new RuntimeException("Pow!");
         }
     }
+}
 
+final var tots = new ThrowOnceThenSucceed();
 final var retryPolicy = RetryPolicy.<String>builder()
-                .withMaxExecutions(2)
+                .withMaxExecutions(2L)
                 .retryWhenException(e -> Objects.equals(e.getClass(), RuntimeException.class)).build();
 Optional<String> result = Retry.with(retryPolicy).call(tots::invoke);
 // result.get() => "Yippie!"
