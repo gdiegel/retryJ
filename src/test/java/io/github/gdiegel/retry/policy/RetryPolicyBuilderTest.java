@@ -13,17 +13,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package io.github.gdiegel.retry.exception;
+package io.github.gdiegel.retry.policy;
 
-/**
- * A {@link RetriesExhaustedException}
- *
- * @author Gabriel Diegel
- */
-public class RetriesExhaustedException extends RuntimeException {
+import org.junit.jupiter.api.Test;
 
-    public RetriesExhaustedException(String message) {
-        super(message);
+import static org.assertj.core.api.Assertions.assertThat;
+
+class RetryPolicyBuilderTest {
+
+    @Test
+    void canCreateBuilderFromRetryPolicy() {
+        final RetryPolicyBuilder<Integer> builder = RetryPolicy.builder();
+        assertThat(builder).isNotNull();
+    }
+
+    @Test
+    void canCreateBuilderFromRetryPolicyBuilder() {
+        final RetryPolicyBuilder<Integer> builder = RetryPolicyBuilder.instance();
+        assertThat(builder).isNotNull();
     }
 
 }
