@@ -4,6 +4,13 @@ import java.time.Duration;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 
+/**
+ * A {@link RetryPolicy<RESULT>} allows configuring exactly how often the computation should be executed and
+ * under which conditions it should be aborted.
+ *
+ * @param <RESULT> the type of the result of the computation
+ * @author Gabriel Diegel
+ */
 public class RetryPolicy<RESULT> {
 
     private final Duration interval;

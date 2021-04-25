@@ -17,7 +17,7 @@ import static java.time.LocalTime.now;
  * times as necessary until either a timeout occurs, the configured number of executions is exhausted,
  * a not previously allowed exception is thrown or a stop condition is satisfied.
  *
- * @param <RESULT> type of the result
+ * @param <RESULT> the type of the result of the computation
  * @author Gabriel Diegel
  */
 public final class DefaultRetry<RESULT> implements Retry<RESULT> {

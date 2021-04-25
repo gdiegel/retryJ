@@ -10,19 +10,26 @@ import java.util.concurrent.Callable;
  *
  * Thanks to Ray Holder, Jean-Baptiste Nizet and Jonathan Halterman for the inspiration.
  *
+ * @param <RESULT> the type of the result of the computation
  * @author Gabriel Diegel
  */
 public interface Retry<RESULT> {
 
+    /**
+     * Set a {@link RetryPolicy<RESULT>} for the computation.
+     * @param retryPolicy the retry policy to use when executing the computation
+     * @param <RESULT> the type of the result of the computation
+     * @return Self for method chaining
+     */
     static <RESULT> Retry<RESULT> with(RetryPolicy<RESULT> retryPolicy) {
         return new DefaultRetry<>(retryPolicy);
     }
 
     /**
-     * Retry the execution wrapped in {@link Callable}.
+     * Execute the computation wrapped in {@link Callable}.
      *
      * @param retryableTask the retryable task
-     * @return the return value of the callable
+     * @return An {@link Optional} holding the result of the computation or not.
      */
     Optional<RESULT> call(Callable<RESULT> retryableTask);
 }
