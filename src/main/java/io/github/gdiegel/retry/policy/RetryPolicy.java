@@ -1,5 +1,7 @@
 package io.github.gdiegel.retry.policy;
 
+import io.github.gdiegel.retry.exception.RetriesExhaustedException;
+
 import java.time.Duration;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
@@ -31,30 +33,55 @@ public class RetryPolicy<RESULT> {
         this.throwing = throwing;
     }
 
+    /**
+     * @param <RESULT> the type of the result of the computation
+     * @return an instance of {@link RetryPolicyBuilder<RESULT>}
+     */
     public static <RESULT> RetryPolicyBuilder<RESULT> builder() {
         return new RetryPolicyBuilder<>();
     }
 
+    /**
+     * @return a {@link Duration} representing the interval between executions
+     */
     public Duration getInterval() {
         return interval;
     }
 
+    /**
+     * @return a {@link Duration} representing the absolute timeout after which executions will considered to be exhausted and aborted
+     */
     public Duration getTimeout() {
         return timeout;
     }
 
+    /**
+     * @return a {@link Predicate<Exception>} that matches exceptions to ignore during computation
+     */
     public Predicate<Exception> getIgnorableException() {
         return ignorableException;
     }
 
+    /**
+     * @return a {@link Predicate<RESULT>} that matches a condition representing a successful computation, after which executions
+     * should be stopped
+     */
     public Predicate<RESULT> getStopCondition() {
         return stopCondition;
     }
 
+    /**
+     * @return a long representing the absolute number of executions
+     * should be stopped
+     */
     public long getMaximumExecutions() {
         return maximumExecutions;
     }
 
+    /**
+     * @return a boolean indicating if {@link RetriesExhaustedException} should be thrown if the
+     * retries are exhausted
+     */
     public boolean isThrowing() {
         return throwing;
     }
