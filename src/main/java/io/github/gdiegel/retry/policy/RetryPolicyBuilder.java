@@ -22,15 +22,9 @@ public class RetryPolicyBuilder<RESULT> {
     private static final String MAXIMUM_EXECUTIONS_FORMAT = "Maximum executions: [%s]";
 
     /**
-     * Default: False, i.e. no exception will be ignored, in other words, any exception will break the execution chain.
+     * Default: Interval of 10 milliseconds between executions
      */
-    private Predicate<Exception> ignorableException = exception -> false;
-
-    /**
-     * Default: False, will retry until exhausted, i.e. the given timeout is reached or the given maximum
-     * number of executions have been performed.
-     */
-    private Predicate<RESULT> stopCondition = result -> false;
+    private Duration interval = Duration.ofMillis(10);
 
     /**
      * Default: 10 second timeout
@@ -38,27 +32,98 @@ public class RetryPolicyBuilder<RESULT> {
     private Duration timeout = Duration.ofSeconds(10);
 
     /**
-     * Default: Interval of 10 milliseconds between executions
-     */
-    private Duration interval = Duration.ofMillis(10);
-
-    /**
-     * Default: No upper bound, will retry run until a stop condition occurs, a non-ignorable exception
-     * is thrown or the given timeout is reached
+     * Default: No upper bound, will retry run until a stop condition occurs, a non-ignorable exception is thrown or the
+     * given timeout is reached
      */
     private long maximumExecutions = -1;
+
+    /**
+     * Default: False, i.e. no exception will be ignored, in other words, any exception will break the execution chain.
+     */
+    private Predicate<Exception> ignorableException = exception -> false;
+
+    /**
+     * Default: False, will retry until exhausted, i.e. the given timeout is reached or the given maximum number of
+     * executions have been performed.
+     */
+    private Predicate<RESULT> stopCondition = result -> false;
 
     /**
      * Default: Don't throw {@link RetriesExhaustedException}
      */
     private boolean throwing = false;
 
+    /**
+     * Return a fluent {@link RetryPolicyBuilder<RESULT>}.
+     *
+     * @param <RESULT> the type of the result of the computation
+     * @return an instance of {@link RetryPolicyBuilder<RESULT>}
+     */
     public static <RESULT> RetryPolicyBuilder<RESULT> instance() {
         return new RetryPolicyBuilder<>();
     }
 
-    public RetryPolicy<RESULT> build() {
-        return new RetryPolicy<>(this.interval, this.timeout, this.ignorableException, this.stopCondition, this.maximumExecutions, this.throwing);
+    /**
+     * @param interval a {@link Duration} representing the interval between executions
+     * @return self
+     */
+    public RetryPolicyBuilder<RESULT> withInterval(Duration interval) {
+        checkNotNull(interval, "timeout");
+        checkArgument(interval.getNano() >= 0, format(INTERVAL_FORMAT, interval));
+        this.interval = interval;
+        return this;
+    }
+
+    /**
+     * @param timeout a {@link Duration} representing the absolute timeout after which executions will considered to be
+     * exhausted and aborted
+     * @return self
+     */
+    public RetryPolicyBuilder<RESULT> withTimeout(Duration timeout) {
+        checkNotNull(timeout, "timeout");
+        checkArgument(timeout.getNano() >= 0, format(TIMEOUT_FORMAT, timeout));
+        this.timeout = timeout;
+        return this;
+    }
+
+    /**
+     * @param maximumExecutions a long representing the absolute number of executions after which executions will
+     * considered to be exhausted and aborted.
+     * @return self
+     */
+    public RetryPolicyBuilder<RESULT> withMaxExecutions(long maximumExecutions) {
+        checkArgument(maximumExecutions >= 0, format(MAXIMUM_EXECUTIONS_FORMAT, maximumExecutions));
+        this.maximumExecutions = maximumExecutions;
+        return this;
+    }
+
+    /**
+     * Add predicate which will evaluated on any {@link Exception} thrown during computation. If the predicate matches
+     * the exception, the exception will be ignored and the computation will be continued. If the predicate doesn't
+     * match the exception, the exception will be re-thrown.
+     *
+     * @param ignorableException a {@link Predicate<Exception>} representing exceptions to ignore during computation
+     * @return self
+     */
+    public RetryPolicyBuilder<RESULT> retryWhenException(Predicate<Exception> ignorableException) {
+        checkNotNull(ignorableException, "ignorableException");
+        this.ignorableException = ignorableException;
+        return this;
+    }
+
+    /**
+     * Add predicate which will evaluated on {@link RESULT} after every execution. If the predicate matches the result,
+     * the computation will be stopped and the result returned. If the predicate doesn't match the result, the
+     * computation will be continued.
+     *
+     * @param stopCondition a {@link Predicate<RESULT>} representing a successful computation, after which executions
+     * should be stopped
+     * @return self
+     */
+    public RetryPolicyBuilder<RESULT> retryUntil(Predicate<RESULT> stopCondition) {
+        checkNotNull(stopCondition, "stopCondition");
+        this.stopCondition = stopCondition;
+        return this;
     }
 
     /**
@@ -71,35 +136,8 @@ public class RetryPolicyBuilder<RESULT> {
         return this;
     }
 
-    public RetryPolicyBuilder<RESULT> withTimeout(Duration timeout) {
-        checkNotNull(timeout, "timeout");
-        checkArgument(timeout.getNano() >= 0, format(TIMEOUT_FORMAT, timeout));
-        this.timeout = timeout;
-        return this;
+    public RetryPolicy<RESULT> build() {
+        return new RetryPolicy<>(this.interval, this.timeout, this.maximumExecutions, this.ignorableException, this.stopCondition, this.throwing);
     }
 
-    public RetryPolicyBuilder<RESULT> withInterval(Duration interval) {
-        checkNotNull(interval, "timeout");
-        checkArgument(interval.getNano() >= 0, format(INTERVAL_FORMAT, interval));
-        this.interval = interval;
-        return this;
-    }
-
-    public RetryPolicyBuilder<RESULT> withMaxExecutions(long maxExecutions) {
-        checkArgument(maxExecutions >= 0, format(MAXIMUM_EXECUTIONS_FORMAT, maxExecutions));
-        this.maximumExecutions = maxExecutions;
-        return this;
-    }
-
-    public RetryPolicyBuilder<RESULT> retryWhenException(Predicate<Exception> ignorableException) {
-        checkNotNull(ignorableException, "ignorableException");
-        this.ignorableException = ignorableException;
-        return this;
-    }
-
-    public RetryPolicyBuilder<RESULT> retryUntil(Predicate<RESULT> stopCondition) {
-        checkNotNull(stopCondition, "stopCondition");
-        this.stopCondition = stopCondition;
-        return this;
-    }
 }
