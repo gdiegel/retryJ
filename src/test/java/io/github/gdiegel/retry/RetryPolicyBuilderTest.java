@@ -1,5 +1,7 @@
 package io.github.gdiegel.retry;
 
+import io.github.gdiegel.retry.policy.RetryPolicy;
+import io.github.gdiegel.retry.policy.RetryPolicyBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

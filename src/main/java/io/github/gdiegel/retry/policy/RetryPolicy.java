@@ -1,4 +1,4 @@
-package io.github.gdiegel.retry;
+package io.github.gdiegel.retry.policy;
 
 import java.time.Duration;
 import java.util.StringJoiner;
@@ -22,7 +22,7 @@ public class RetryPolicy<RESULT> {
     private final long maximumExecutions;
     private final boolean throwing;
 
-    public RetryPolicy(Duration interval, Duration timeout, Predicate<Exception> ignorableException, Predicate<RESULT> stopCondition, long maximumExecutions, boolean throwing) {
+    RetryPolicy(Duration interval, Duration timeout, Predicate<Exception> ignorableException, Predicate<RESULT> stopCondition, long maximumExecutions, boolean throwing) {
         this.interval = interval;
         this.timeout = timeout;
         this.ignorableException = ignorableException;

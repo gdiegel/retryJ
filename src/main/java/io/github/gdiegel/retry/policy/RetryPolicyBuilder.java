@@ -1,6 +1,6 @@
-package io.github.gdiegel.retry;
+package io.github.gdiegel.retry.policy;
 
-import io.github.gdiegel.exception.RetriesExhaustedException;
+import io.github.gdiegel.retry.exception.RetriesExhaustedException;
 
 import java.time.Duration;
 import java.util.function.Predicate;

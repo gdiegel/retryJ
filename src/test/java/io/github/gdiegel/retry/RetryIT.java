@@ -1,7 +1,8 @@
 package io.github.gdiegel.retry;
 
-import io.github.gdiegel.exception.RetriesExhaustedException;
-import io.github.gdiegel.exception.RetryException;
+import io.github.gdiegel.retry.exception.RetriesExhaustedException;
+import io.github.gdiegel.retry.exception.RetryException;
+import io.github.gdiegel.retry.policy.RetryPolicy;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
@@ -162,7 +163,7 @@ class RetryIT {
     }
 
     private static class InvocationCounter {
-        private long invocations = 0;
+        private long invocations = 0L;
 
         long invoke() {
             invocations++;

@@ -1,5 +1,7 @@
 package io.github.gdiegel.retry;
 
+import io.github.gdiegel.retry.policy.RetryPolicy;
+
 import java.util.Optional;
 import java.util.concurrent.Callable;
 

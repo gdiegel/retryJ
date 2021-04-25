@@ -1,4 +1,4 @@
-package io.github.gdiegel.exception;
+package io.github.gdiegel.retry.exception;
 
 public class RetriesExhaustedException extends RuntimeException {
 

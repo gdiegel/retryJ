@@ -1,7 +1,8 @@
 package io.github.gdiegel.retry;
 
-import io.github.gdiegel.exception.RetriesExhaustedException;
-import io.github.gdiegel.exception.RetryException;
+import io.github.gdiegel.retry.exception.RetriesExhaustedException;
+import io.github.gdiegel.retry.exception.RetryException;
+import io.github.gdiegel.retry.policy.RetryPolicy;
 
 import java.time.LocalTime;
 import java.util.Optional;
