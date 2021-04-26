@@ -7,7 +7,7 @@
     <artifactId>retryJ</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>${project.artifactId}</name>
+    <name>${project.groupId}:${project.artifactId}</name>
     <description>Micro retry library for Java</description>
     <url>https://github.com/gdiegel/retryJ</url>
     <scm>
