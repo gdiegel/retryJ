@@ -22,8 +22,8 @@ import java.util.StringJoiner;
 import java.util.function.Predicate;
 
 /**
- * A {@link RetryPolicy<RESULT>} allows configuring exactly how often the computation should be executed and under which
- * conditions it should be aborted.
+ * A {@link RetryPolicy} of {@code RESULT} allows configuring exactly how often the computation should be executed and
+ * under which conditions it should be aborted.
  *
  * @param <RESULT> the type of the result of the computation
  * @author Gabriel Diegel
@@ -47,10 +47,10 @@ public class RetryPolicy<RESULT> {
     }
 
     /**
-     * Return a fluent {@link RetryPolicyBuilder<RESULT>}.
+     * Return a fluent {@link RetryPolicyBuilder} of {@code RESULT}.
      *
      * @param <RESULT> the type of the result of the computation
-     * @return an instance of {@link RetryPolicyBuilder<RESULT>}
+     * @return an instance of {@link RetryPolicyBuilder} of {@code RESULT}
      */
     public static <RESULT> RetryPolicyBuilder<RESULT> builder() {
         return new RetryPolicyBuilder<>();
@@ -80,15 +80,15 @@ public class RetryPolicy<RESULT> {
     }
 
     /**
-     * @return a {@link Predicate<Exception>} representing exceptions to ignore during computation
+     * @return a {@link Predicate} of {@link Exception} representing exceptions to ignore during computation
      */
     public Predicate<Exception> getIgnorableException() {
         return ignorableException;
     }
 
     /**
-     * @return a {@link Predicate<RESULT>} representing a successful computation, after which executions should be
-     * stopped
+     * @return a {@link Predicate} of {@code RESULT} representing a successful computation, after which executions
+     * should be stopped
      */
     public Predicate<RESULT> getStopCondition() {
         return stopCondition;

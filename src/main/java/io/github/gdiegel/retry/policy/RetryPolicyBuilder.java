@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
 /**
- * Allows fluently building a {@link RetryPolicy<RESULT>} using sensible defaults.
+ * Allows fluently building a {@link RetryPolicy} of {@code RESULT} using sensible defaults.
  *
  * @param <RESULT> the type of the result of the computation
  * @author Gabriel Diegel
@@ -69,10 +69,10 @@ public class RetryPolicyBuilder<RESULT> {
     private boolean throwing = false;
 
     /**
-     * Return a fluent {@link RetryPolicyBuilder<RESULT>}.
+     * Return a fluent {@link RetryPolicyBuilder} of {@code RESULT}.
      *
      * @param <RESULT> the type of the result of the computation
-     * @return an instance of {@link RetryPolicyBuilder<RESULT>}
+     * @return an instance of {@link RetryPolicyBuilder} of {@code RESULT}
      */
     public static <RESULT> RetryPolicyBuilder<RESULT> instance() {
         return new RetryPolicyBuilder<>();
@@ -117,7 +117,8 @@ public class RetryPolicyBuilder<RESULT> {
      * the exception, the exception will be ignored and the computation will be continued. If the predicate doesn't
      * match the exception, the exception will be re-thrown.
      *
-     * @param ignorableException a {@link Predicate<Exception>} representing exceptions to ignore during computation
+     * @param ignorableException a {@link Predicate} of {@link Exception} representing exceptions to ignore during
+     * computation
      * @return self
      */
     public RetryPolicyBuilder<RESULT> retryWhenException(Predicate<Exception> ignorableException) {
@@ -131,8 +132,8 @@ public class RetryPolicyBuilder<RESULT> {
      * the computation will be stopped and the result returned. If the predicate doesn't match the result, the
      * computation will be continued.
      *
-     * @param stopCondition a {@link Predicate<RESULT>} representing a successful computation, after which executions
-     * should be stopped
+     * @param stopCondition a {@link Predicate} of {@code RESULT} representing a successful computation, after which
+     * executions should be stopped
      * @return self
      */
     public RetryPolicyBuilder<RESULT> retryUntil(Predicate<RESULT> stopCondition) {
