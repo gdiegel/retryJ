@@ -8,17 +8,17 @@ execution limits and timeouts and allows configuring the interval between execut
 ### Execute once and return the result:
 
 ```java
-final RetryPolicy<Double> retryPolicy = RetryPolicy.<Double>builder()
-                .withMaxExecutions(1L)
+final var retryPolicy = RetryPolicy.<Double>builder()
+                .withMaximumExecutions(1L)
                 .build();
-final Optional<Double> result = Retry.with(retryPolicy).call(Math::random);
+final var result = Retry.with(retryPolicy).call(Math::random);
 // result.get() => 0.570372838968257
 ```
 
 ### Execute twice while ignoring any RuntimeExceptions:
 
 ```java
-private static class ThrowOnceThenSucceed {
+class ThrowOnceThenSucceed {
     private boolean thrown = false;
 
     String invoke() {
@@ -30,25 +30,27 @@ private static class ThrowOnceThenSucceed {
         }
     }
 }
-
+```
+```java
 final var tots = new ThrowOnceThenSucceed();
 final var retryPolicy = RetryPolicy.<String>builder()
-                .withMaxExecutions(2L)
-                .retryWhenException(e -> Objects.equals(e.getClass(), RuntimeException.class)).build();
-Optional<String> result = Retry.with(retryPolicy).call(tots::invoke);
+                .withMaximumExecutions(2L)
+                .ignoreWhen(exception -> exception.getClass() == RuntimeException.class)
+                .build();
+final var result = Retry.with(retryPolicy).call(tots::invoke);
 // result.get() => "Yippie!"
 ```
 
 ### Execute every 100 nanoseconds for a maximum of one minute until the result is smaller than or equal to 0.01 while ignoring any NumberFormatExceptions:
 
 ```java
-final RetryPolicy<Double> retryPolicy = RetryPolicy.<Double>builder()
+final var retryPolicy = RetryPolicy.<Double>builder()
         .withInterval(Duration.of(100, NANOS))
         .withTimeout(Duration.of(1, MINUTES))
-        .retryWhenException(e -> e.getClass().equals(NumberFormatException.class))
+        .ignoreWhen(exception -> exception.getClass() == NumberFormatException.class)
         .retryUntil(d -> d <= 0.01)
         .build();
-final Optional<Double> result = Retry.with(retryPolicy).call(Math::random);
+final var result = Retry.with(retryPolicy).call(Math::random);
 // result.get() => 0.09588896186808349
 ```
 

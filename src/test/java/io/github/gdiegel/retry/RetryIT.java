@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.time.Duration;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
@@ -122,7 +121,7 @@ class RetryIT {
         final var tots = new ThrowOnceThenSucceed();
         final var retryPolicy = RetryPolicy.<String>builder()
                 .withMaximumExecutions(2)
-                .ignoreWhen(e -> Objects.equals(e.getClass(), RuntimeException.class)).build();
+                .ignoreWhen(exception -> exception.getClass() == RuntimeException.class).build();
         assertThat(Retry.with(retryPolicy).call(tots::invoke))
                 .isPresent().get(InstanceOfAssertFactories.STRING)
                 .isEqualTo("Yippie!");
