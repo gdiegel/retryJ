@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 
 import static java.time.LocalTime.now;
 
@@ -42,7 +42,11 @@ public final class DefaultRetry<RESULT> implements Retry<RESULT> {
 
     private final RetryPolicy<RESULT> retryPolicy;
 
-    private final AtomicLong currentExecutions = new AtomicLong(0);
+    protected long getCurrentExecutions() {
+        return currentExecutions.sum();
+    }
+
+    private final LongAdder currentExecutions = new LongAdder();
     private LocalTime startTime;
 
     DefaultRetry(RetryPolicy<RESULT> retryPolicy) {
@@ -69,7 +73,7 @@ public final class DefaultRetry<RESULT> implements Retry<RESULT> {
     private Optional<RESULT> doCall(Callable<RESULT> callable) {
         Optional<RESULT> call = Optional.empty();
         try {
-            currentExecutions.incrementAndGet();
+            currentExecutions.increment();
             call = Optional.of(callable.call());
         } catch (Exception e) {
             if (!retryPolicy.getIgnorableException().test(e)) {
@@ -95,7 +99,7 @@ public final class DefaultRetry<RESULT> implements Retry<RESULT> {
         if (retryPolicy.getMaximumExecutions() <= 0) {
             return false;
         }
-        return currentExecutions.get() == retryPolicy.getMaximumExecutions();
+        return currentExecutions.sum() == retryPolicy.getMaximumExecutions();
     }
 
     private void setStartTime() {
@@ -116,7 +120,7 @@ public final class DefaultRetry<RESULT> implements Retry<RESULT> {
     public String toString() {
         return new StringJoiner(", ", DefaultRetry.class.getSimpleName() + "[", "]")
                 .add("retryPolicy=" + retryPolicy)
-                .add("currentExecutions=" + currentExecutions.get())
+                .add("currentExecutions=" + currentExecutions.sum())
                 .add("startTime=" + startTime)
                 .toString();
     }

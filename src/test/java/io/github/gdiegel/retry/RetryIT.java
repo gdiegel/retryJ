@@ -15,6 +15,7 @@
  */
 package io.github.gdiegel.retry;
 
+import com.google.common.base.Stopwatch;
 import io.github.gdiegel.retry.exception.RetriesExhaustedException;
 import io.github.gdiegel.retry.exception.RetryException;
 import io.github.gdiegel.retry.policy.RetryPolicy;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -79,7 +81,10 @@ class RetryIT {
                 .withInterval(Duration.ZERO)
                 .withTimeout(Duration.ofHours(1))
                 .retryUntil(shouldStop -> false).build();
-        assertThat(Retry.with(retryPolicy).call(invocationCounter::invoke))
+        final Retry<Long> retry = Retry.with(retryPolicy);
+        final Optional<Long> result = retry.call(invocationCounter::invoke);
+        assertThat(((DefaultRetry<Long>) retry).getCurrentExecutions()).isEqualTo(executions);
+        assertThat(result)
                 .as("100000 original invocations")
                 .contains(executions);
         assertThat(invocationCounter.invocations.get()).isEqualTo(executions);
@@ -135,10 +140,15 @@ class RetryIT {
     @Test
     void shouldThrowRetriesExhaustedExceptionWhenTimeoutReached() {
         final var retryPolicy = RetryPolicy.<Integer>builder()
-                .withTimeout(Duration.of(1, SECONDS))
+                .withInterval(Duration.ZERO)
+                .withTimeout(Duration.of(5, SECONDS))
                 .throwing()
                 .build();
-        assertThatThrownBy(() -> Retry.with(retryPolicy).call(() -> 1)).isExactlyInstanceOf(RetriesExhaustedException.class);
+        final Retry<Integer> retry = Retry.with(retryPolicy);
+        final Stopwatch started = Stopwatch.createStarted();
+        assertThatThrownBy(() -> retry.call(() -> 1)).isExactlyInstanceOf(RetriesExhaustedException.class);
+        started.stop();
+        assertThat(started.elapsed()).isCloseTo(Duration.ofSeconds(5), Duration.ofMillis(500));
     }
 
     @Test

@@ -42,9 +42,9 @@ public class RetryPolicyBuilder<RESULT> {
     private Duration interval = Duration.ofMillis(10);
 
     /**
-     * Default: 10 second timeout
+     * Default: 30 second timeout
      */
-    private Duration timeout = Duration.ofSeconds(10);
+    private Duration timeout = Duration.ofSeconds(30);
 
     /**
      * Default: No upper bound, will retry run until a stop condition occurs, a non-ignorable exception is thrown or the
