@@ -59,6 +59,7 @@ public final class DefaultRetry<RESULT> implements Retry<RESULT> {
     @Override
     public Optional<RESULT> call(Callable<RESULT> callable) {
         Preconditions.checkNotNull(callable);
+        Preconditions.checkNotNull(retryPolicy);
         Optional<RESULT> result = Optional.empty();
         if (retryPolicy.getMaximumExecutions() == 0) {
             return result;
