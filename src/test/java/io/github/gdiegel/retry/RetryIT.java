@@ -21,6 +21,7 @@ import io.github.gdiegel.retry.exception.RetryException;
 import io.github.gdiegel.retry.policy.RetryPolicy;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.time.Duration;
 import java.util.Objects;
@@ -35,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class RetryIT {
 
     @Test
@@ -153,11 +155,15 @@ class RetryIT {
 
     @Test
     void shouldThrowRetriesExhaustedExceptionWhenRetriesUp() {
+        final long executions = 10L;
         final var retryPolicy = RetryPolicy.<Integer>builder()
-                .withMaxExecutions(10)
+                .withMaxExecutions(executions)
                 .throwing()
                 .build();
-        assertThatThrownBy(() -> Retry.with(retryPolicy).call(() -> 1)).isExactlyInstanceOf(RetriesExhaustedException.class);
+        final Retry<Integer> retry = Retry.with(retryPolicy);
+        assertThatThrownBy(() -> retry.call(() -> 1))
+                .isExactlyInstanceOf(RetriesExhaustedException.class);
+        assertThat(((DefaultRetry<Integer>) retry).getCurrentExecutions()).isEqualTo(executions);
     }
 
     @Test
@@ -170,10 +176,13 @@ class RetryIT {
 
     @Test
     void shouldNotThrowRetriesExhaustedExceptionWhenSilencedAndRetriesUp() {
+        final long executions = 10L;
         final var retryPolicy = RetryPolicy.<Integer>builder()
-                .withMaxExecutions(10)
+                .withMaxExecutions(executions)
                 .build();
-        assertThatCode(() -> Retry.with(retryPolicy).call(() -> 1)).doesNotThrowAnyException();
+        final Retry<Integer> retry = Retry.with(retryPolicy);
+        assertThatCode(() -> retry.call(() -> 1)).doesNotThrowAnyException();
+        assertThat(((DefaultRetry<Integer>) retry).getCurrentExecutions()).isEqualTo(executions);
     }
 
     private static class ThrowOnceThenSucceed {

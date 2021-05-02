@@ -15,6 +15,7 @@
  */
 package io.github.gdiegel.retry;
 
+import com.google.common.base.Preconditions;
 import io.github.gdiegel.retry.policy.RetryPolicy;
 
 import java.util.Optional;
@@ -38,6 +39,7 @@ public interface Retry<RESULT> {
      * @return self
      */
     static <RESULT> Retry<RESULT> with(RetryPolicy<RESULT> retryPolicy) {
+        Preconditions.checkNotNull(retryPolicy);
         return new DefaultRetry<>(retryPolicy);
     }
 

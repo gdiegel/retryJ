@@ -15,6 +15,8 @@
  */
 package io.github.gdiegel.retry;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import io.github.gdiegel.retry.exception.RetriesExhaustedException;
 import io.github.gdiegel.retry.exception.RetryException;
 import io.github.gdiegel.retry.policy.RetryPolicy;
@@ -42,10 +44,6 @@ public final class DefaultRetry<RESULT> implements Retry<RESULT> {
 
     private final RetryPolicy<RESULT> retryPolicy;
 
-    protected long getCurrentExecutions() {
-        return currentExecutions.sum();
-    }
-
     private final LongAdder currentExecutions = new LongAdder();
     private LocalTime startTime;
 
@@ -53,8 +51,14 @@ public final class DefaultRetry<RESULT> implements Retry<RESULT> {
         this.retryPolicy = retryPolicy;
     }
 
+    @VisibleForTesting
+    long getCurrentExecutions() {
+        return currentExecutions.sum();
+    }
+
     @Override
     public Optional<RESULT> call(Callable<RESULT> callable) {
+        Preconditions.checkNotNull(callable);
         Optional<RESULT> result = Optional.empty();
         if (retryPolicy.getMaximumExecutions() == 0) {
             return result;
