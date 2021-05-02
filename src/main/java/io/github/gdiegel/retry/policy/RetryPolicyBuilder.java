@@ -106,7 +106,7 @@ public class RetryPolicyBuilder<RESULT> {
      * considered to be exhausted and aborted.
      * @return self
      */
-    public RetryPolicyBuilder<RESULT> withMaxExecutions(long maximumExecutions) {
+    public RetryPolicyBuilder<RESULT> withMaximumExecutions(long maximumExecutions) {
         checkArgument(maximumExecutions >= 0, format(MAXIMUM_EXECUTIONS_FORMAT, maximumExecutions));
         this.maximumExecutions = maximumExecutions;
         return this;
@@ -121,7 +121,7 @@ public class RetryPolicyBuilder<RESULT> {
      * computation
      * @return self
      */
-    public RetryPolicyBuilder<RESULT> retryWhenException(Predicate<Exception> ignorableException) {
+    public RetryPolicyBuilder<RESULT> ignoreWhen(Predicate<Exception> ignorableException) {
         checkNotNull(ignorableException, "ignorableException");
         this.ignorableException = ignorableException;
         return this;
@@ -143,12 +143,12 @@ public class RetryPolicyBuilder<RESULT> {
     }
 
     /**
-     * Throw {@link RetriesExhaustedException} instead of returning the result when retries are exhausted.
-     *
+     * @param throwing Throw {@link RetriesExhaustedException} instead of returning the result when retries are
+     * exhausted.
      * @return self
      */
-    public RetryPolicyBuilder<RESULT> throwing() {
-        this.throwing = true;
+    public RetryPolicyBuilder<RESULT> throwing(boolean throwing) {
+        this.throwing = throwing;
         return this;
     }
 
