@@ -1,7 +1,7 @@
 # retryJ
 retryJ is a micro retry library for Java that allows executing a computation wrapped in a Callable until the result
-matches a desired condition while ignoring any exception that might be thrown along the way. It supports global
-execution limits and timeouts and allows configuring the interval between executions.
+matches a desired condition while ignoring certain exceptions that might be thrown along the way. It supports global
+execution limits, timeouts and allows configuring the interval between executions.
 
 ## Usage
 
