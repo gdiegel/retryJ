@@ -33,7 +33,6 @@ class DefaultRetryTest extends BaseTest {
 
     @Test
     void shouldThrowNullPointerExceptionWhenCreatedByConstructorAndRetryPolicyIsNullAndCall() {
-        DefaultRetry<Integer> defaultRetry = new DefaultRetry<>(null);
-        assertThatThrownBy(() -> defaultRetry.call(IDEMPOTENT_CALLABLE)).isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> new DefaultRetry<Integer>(null).call(IDEMPOTENT_CALLABLE)).isExactlyInstanceOf(NullPointerException.class);
     }
 }
