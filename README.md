@@ -1,7 +1,7 @@
 # retryJ
-retryJ is a micro retry library for Java that allows executing a computation wrapped in a Callable until the result
+retryJ is a micro retry library for Java. It allows executing a computation wrapped in a Callable until the result
 matches a desired condition while ignoring certain exceptions that might be thrown along the way. It supports global
-execution limits, timeouts and allows configuring the interval between executions.
+execution limits and timeouts and allows configuring the interval between executions.
 
 ## Usage
 
@@ -15,7 +15,7 @@ final var result = Retry.with(retryPolicy).call(Math::random);
 // result.get() => 0.570372838968257
 ```
 
-### Execute twice while ignoring any RuntimeExceptions:
+### Execute twice while ignoring `RuntimeException`:
 
 ```java
 class ThrowOnceThenSucceed {
@@ -41,7 +41,7 @@ final var result = Retry.with(retryPolicy).call(tots::invoke);
 // result.get() => "Yippie!"
 ```
 
-### Execute every 100 nanoseconds for a maximum of one minute until the result is smaller than or equal to 0.01 while ignoring any NumberFormatExceptions:
+### Execute every 100 nanoseconds for a maximum of one minute until the result is smaller than or equal to 0.01 while ignoring `NumberFormatException`:
 
 ```java
 final var retryPolicy = RetryPolicy.<Double>builder()
