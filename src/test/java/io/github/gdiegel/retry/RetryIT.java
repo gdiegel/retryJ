@@ -84,7 +84,6 @@ class RetryIT {
                 .retryUntil(shouldStop -> false).build();
         final Retry<Long> retry = Retry.with(retryPolicy);
         final Optional<Long> result = retry.call(invocationCounter::invoke);
-        assertThat(((DefaultRetry<Long>) retry).getCurrentExecutions()).isEqualTo(executions);
         assertThat(result)
                 .as("100000 original invocations")
                 .contains(executions);
@@ -162,7 +161,6 @@ class RetryIT {
         final Retry<Integer> retry = Retry.with(retryPolicy);
         assertThatThrownBy(() -> retry.call(() -> 1))
                 .isExactlyInstanceOf(RetriesExhaustedException.class);
-        assertThat(((DefaultRetry<Integer>) retry).getCurrentExecutions()).isEqualTo(executions);
     }
 
     @Test
@@ -181,7 +179,6 @@ class RetryIT {
                 .build();
         final Retry<Integer> retry = Retry.with(retryPolicy);
         assertThatCode(() -> retry.call(() -> 1)).doesNotThrowAnyException();
-        assertThat(((DefaultRetry<Integer>) retry).getCurrentExecutions()).isEqualTo(executions);
     }
 
     private static class ThrowOnceThenSucceed {
