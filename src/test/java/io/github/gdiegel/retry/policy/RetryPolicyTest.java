@@ -32,12 +32,12 @@ class RetryPolicyTest extends BaseTest {
     void canCreateInstanceOfRetryPolicyViaConstructor() {
         final RetryPolicy<Integer> retryPolicy = new RetryPolicy<>(INTERVAL, TIMEOUT, MAXIMUM_EXECUTIONS, IGNORABLE_EXCEPTION, STOP_CONDITION, THROWING);
         assertThat(retryPolicy).isNotNull();
-        assertThat(retryPolicy.getInterval()).isEqualTo(INTERVAL);
-        assertThat(retryPolicy.getTimeout()).isEqualTo(TIMEOUT);
-        assertThat(retryPolicy.getMaximumExecutions()).isEqualTo(MAXIMUM_EXECUTIONS);
-        assertThat(retryPolicy.getIgnorableException()).isEqualTo(IGNORABLE_EXCEPTION);
-        assertThat(retryPolicy.getStopCondition()).isEqualTo(STOP_CONDITION);
-        assertThat(retryPolicy.isThrowing()).isEqualTo(THROWING);
+        assertThat(retryPolicy.interval()).isEqualTo(INTERVAL);
+        assertThat(retryPolicy.timeout()).isEqualTo(TIMEOUT);
+        assertThat(retryPolicy.maximumExecutions()).isEqualTo(MAXIMUM_EXECUTIONS);
+        assertThat(retryPolicy.ignorableException()).isEqualTo(IGNORABLE_EXCEPTION);
+        assertThat(retryPolicy.stopCondition()).isEqualTo(STOP_CONDITION);
+        assertThat(retryPolicy.throwing()).isEqualTo(THROWING);
     }
 
     @Test
@@ -51,11 +51,11 @@ class RetryPolicyTest extends BaseTest {
                 .throwing(true)
                 .build();
         assertThat(retryPolicy).isNotNull();
-        assertThat(retryPolicy.getInterval()).isEqualTo(INTERVAL);
-        assertThat(retryPolicy.getTimeout()).isEqualTo(TIMEOUT);
-        assertThat(retryPolicy.getMaximumExecutions()).isEqualTo(MAXIMUM_EXECUTIONS);
-        assertThat(retryPolicy.getIgnorableException()).isEqualTo(IGNORABLE_EXCEPTION);
-        assertThat(retryPolicy.getStopCondition()).isEqualTo(STOP_CONDITION);
-        assertThat(retryPolicy.isThrowing()).isEqualTo(THROWING);
+        assertThat(retryPolicy.interval()).isEqualTo(INTERVAL);
+        assertThat(retryPolicy.timeout()).isEqualTo(TIMEOUT);
+        assertThat(retryPolicy.maximumExecutions()).isEqualTo(MAXIMUM_EXECUTIONS);
+        assertThat(retryPolicy.ignorableException()).isEqualTo(IGNORABLE_EXCEPTION);
+        assertThat(retryPolicy.stopCondition()).isEqualTo(STOP_CONDITION);
+        assertThat(retryPolicy.throwing()).isEqualTo(THROWING);
     }
 }

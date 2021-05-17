@@ -15,6 +15,7 @@
  */
 package io.github.gdiegel.retry;
 
+import io.github.gdiegel.retry.executor.RetryExecutor;
 import io.github.gdiegel.retry.policy.RetryPolicy;
 
 import java.time.Duration;
@@ -38,5 +39,5 @@ public abstract class BaseTest {
             .throwing(true)
             .build();
 
-    protected static final Retry<Integer> RETRY = Retry.with(RETRY_POLICY);
+    protected static final RetryExecutor<Integer> RETRY = Retry.using(RETRY_POLICY);
 }

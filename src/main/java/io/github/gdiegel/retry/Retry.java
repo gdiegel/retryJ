@@ -16,6 +16,8 @@
 package io.github.gdiegel.retry;
 
 import com.google.common.base.Preconditions;
+import io.github.gdiegel.retry.executor.DefaultRetryExecutor;
+import io.github.gdiegel.retry.executor.RetryExecutor;
 import io.github.gdiegel.retry.policy.RetryPolicy;
 
 import java.util.Optional;
@@ -23,7 +25,7 @@ import java.util.concurrent.Callable;
 
 /**
  * {@link Retry} allows executing a {@link Callable} of {@code RESULT} zero or more times and will return an {@link
- * Optional} of {@code RESULT} holding an instance of type {@link RESULT} of the result of the computation or not.
+ * Optional} of {@code RESULT} holding an instance of type {@link RESULT} of the result of the computation.
  * Thanks to Ray Holder, Jean-Baptiste Nizet and Jonathan Halterman for the inspiration.
  *
  * @param <RESULT> the type of the result of the computation
@@ -31,23 +33,8 @@ import java.util.concurrent.Callable;
  */
 public interface Retry<RESULT> {
 
-    /**
-     * Set a {@link RetryPolicy} of {@code RESULT} for the computation.
-     *
-     * @param retryPolicy the retry policy to use when executing the computation
-     * @param <RESULT> the type of the result of the computation
-     * @return self
-     */
-    static <RESULT> Retry<RESULT> with(RetryPolicy<RESULT> retryPolicy) {
+    static <RESULT> RetryExecutor<RESULT> using(RetryPolicy<RESULT> retryPolicy) {
         Preconditions.checkNotNull(retryPolicy);
-        return new DefaultRetry<>(retryPolicy);
+        return new DefaultRetryExecutor<>(retryPolicy);
     }
-
-    /**
-     * Execute the computation wrapped in {@link Callable}.
-     *
-     * @param retryableTask the retryable task
-     * @return An {@link Optional} holding the result of the computation or not.
-     */
-    Optional<RESULT> call(Callable<RESULT> retryableTask);
 }

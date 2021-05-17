@@ -26,5 +26,4 @@ class RetryPolicyBuilderTest {
         final RetryPolicyBuilder<Integer> builder = RetryPolicyBuilder.instance();
         assertThat(builder).isNotNull();
     }
-
 }

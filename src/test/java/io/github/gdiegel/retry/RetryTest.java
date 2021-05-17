@@ -19,20 +19,15 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class DefaultRetryTest extends BaseTest {
+class RetryTest extends BaseTest {
 
     @Test
     void shouldThrowNullPointerExceptionWhenRetryPolicyIsNull() {
-        assertThatThrownBy(() -> Retry.with(null)).isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> Retry.using(null)).isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
     void shouldThrowNullPointerExceptionWhenCallableIsNull() {
-        assertThatThrownBy(() -> RETRY.call(null)).isExactlyInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    void shouldThrowNullPointerExceptionWhenCreatedByConstructorAndRetryPolicyIsNullAndCall() {
-        assertThatThrownBy(() -> new DefaultRetry<Integer>(null).call(IDEMPOTENT_CALLABLE)).isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> RETRY.execute(null)).isExactlyInstanceOf(NullPointerException.class);
     }
 }

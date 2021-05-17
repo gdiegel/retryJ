@@ -1,4 +1,4 @@
-package io.github.gdiegel.retry;
+package io.github.gdiegel.retry.executor;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.github.gdiegel.retry.exception.RetriesExhaustedException;
@@ -7,14 +7,13 @@ import io.github.gdiegel.retry.policy.RetryPolicy;
 
 import java.time.LocalTime;
 import java.util.Optional;
-import java.util.StringJoiner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
 import static java.time.LocalTime.now;
 
-class RetryExecutor<RESULT> {
+public class DefaultRetryExecutor<RESULT> implements RetryExecutor<RESULT> {
 
     private static final String RETRIES_OR_EXECUTIONS_EXHAUSTED = "Retries or executions exhausted";
     private final RetryPolicy<RESULT> retryPolicy;
@@ -22,7 +21,7 @@ class RetryExecutor<RESULT> {
     private LocalTime startTime;
     private final LongAdder currentExecutions = new LongAdder();
 
-    RetryExecutor(RetryPolicy<RESULT> retryPolicy) {
+    public DefaultRetryExecutor(RetryPolicy<RESULT> retryPolicy) {
         this.retryPolicy = retryPolicy;
     }
 
@@ -31,8 +30,9 @@ class RetryExecutor<RESULT> {
         return currentExecutions.sum();
     }
 
+    @Override
     public Optional<RESULT> execute(Callable<RESULT> callable) {
-        if (retryPolicy.getMaximumExecutions() == 0) {
+        if (retryPolicy.maximumExecutions() == 0) {
             return Optional.empty();
         }
         return doExecute(callable);
@@ -46,12 +46,12 @@ class RetryExecutor<RESULT> {
                 currentExecutions.increment();
                 result = Optional.ofNullable(callable.call());
             } catch (Exception e) {
-                if (!retryPolicy.getIgnorableException().test(e)) {
+                if (!retryPolicy.ignorableException().test(e)) {
                     throw new RetryException(e);
                 }
             }
             sleep();
-            if (result.isPresent() && retryPolicy.getStopCondition().test(result.get())) {
+            if (result.isPresent() && retryPolicy.stopCondition().test(result.get())) {
                 break;
             }
         } while (!exhausted());
@@ -60,26 +60,26 @@ class RetryExecutor<RESULT> {
 
     private boolean exhausted() {
         final boolean exhausted = timeExhausted() || executionsExhausted();
-        if (exhausted && retryPolicy.isThrowing()) {
+        if (exhausted && retryPolicy.throwing()) {
             throw new RetriesExhaustedException(RETRIES_OR_EXECUTIONS_EXHAUSTED);
         }
         return exhausted;
     }
 
     private boolean timeExhausted() {
-        return now().isAfter(startTime.plus(retryPolicy.getTimeout()));
+        return now().isAfter(startTime.plus(retryPolicy.timeout()));
     }
 
     private boolean executionsExhausted() {
-        if (retryPolicy.getMaximumExecutions() <= 0) {
+        if (retryPolicy.maximumExecutions() <= 0) {
             return false;
         }
-        return currentExecutions.sum() == retryPolicy.getMaximumExecutions();
+        return currentExecutions.sum() == retryPolicy.maximumExecutions();
     }
 
     private void sleep() {
         try {
-            TimeUnit.NANOSECONDS.sleep(retryPolicy.getInterval().toNanos());
+            TimeUnit.NANOSECONDS.sleep(retryPolicy.interval().toNanos());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -89,14 +89,5 @@ class RetryExecutor<RESULT> {
         if (startTime == null) {
             startTime = now();
         }
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", RetryExecutor.class.getSimpleName() + "[", "]")
-                .add("retryPolicy=" + retryPolicy)
-                .add("startTime=" + startTime)
-                .add("currentExecutions=" + currentExecutions)
-                .toString();
     }
 }
