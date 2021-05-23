@@ -1,4 +1,4 @@
-package io.github.gdiegel.retry;
+package io.github.gdiegel.retry.collaborators;
 
 public class ThrowImmediately {
 

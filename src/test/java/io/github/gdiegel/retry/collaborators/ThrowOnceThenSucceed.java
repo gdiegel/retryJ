@@ -1,9 +1,9 @@
-package io.github.gdiegel.retry;
+package io.github.gdiegel.retry.collaborators;
 
 public class ThrowOnceThenSucceed {
     private boolean thrown = false;
 
-    String invoke() {
+    public String invoke() {
         if (thrown) {
             return "Yippie!";
         } else {

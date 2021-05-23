@@ -16,6 +16,9 @@
 package io.github.gdiegel.retry;
 
 import com.google.common.base.Stopwatch;
+import io.github.gdiegel.retry.collaborators.InvocationCounter;
+import io.github.gdiegel.retry.collaborators.StringProvider;
+import io.github.gdiegel.retry.collaborators.ThrowOnceThenSucceed;
 import io.github.gdiegel.retry.exception.RetriesExhaustedException;
 import io.github.gdiegel.retry.exception.RetryException;
 import io.github.gdiegel.retry.executor.RetryExecutor;
@@ -27,7 +30,6 @@ import org.junit.jupiter.api.TestInstance;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.NANOS;
@@ -79,7 +81,7 @@ class RetryIT {
     @Test
     void shouldBeAbleToExecuteManyTimes() {
         final InvocationCounter invocationCounter = new InvocationCounter();
-        final var executions = 100000L;
+        final var executions = 10000L;
         final var retryPolicy = RetryPolicy.<Long>builder()
                 .withMaximumExecutions(executions)
                 .withInterval(Duration.ZERO)
@@ -88,9 +90,9 @@ class RetryIT {
         final RetryExecutor<Long> retry = Retry.with(retryPolicy);
         final Optional<Long> result = retry.execute(invocationCounter::invoke);
         assertThat(result)
-                .as("100000 original invocations")
+                .as("10000 original invocations")
                 .contains(executions);
-        assertThat(invocationCounter.invocations.get()).isEqualTo(executions);
+        assertThat(invocationCounter.getInvocations().get()).isEqualTo(executions);
     }
 
     @Test
@@ -184,20 +186,4 @@ class RetryIT {
         assertThatCode(() -> retry.execute(() -> 1)).doesNotThrowAnyException();
     }
 
-    private static class InvocationCounter {
-        private final AtomicLong invocations = new AtomicLong(0L);
-
-        long invoke() {
-            return invocations.incrementAndGet();
-        }
-    }
-
-    private static class StringProvider {
-        private static final String START = "abcdef";
-        private int pos = 0;
-
-        char getNextChar() {
-            return START.toCharArray()[pos++];
-        }
-    }
 }

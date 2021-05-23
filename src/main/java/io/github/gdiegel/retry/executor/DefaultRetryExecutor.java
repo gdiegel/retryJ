@@ -48,7 +48,7 @@ public class DefaultRetryExecutor<RESULT> implements RetryExecutor<RESULT> {
     }
 
     @VisibleForTesting
-    long getCurrentExecutions() {
+    public long getCurrentExecutions() {
         return currentExecutions.sum();
     }
 
