@@ -72,7 +72,9 @@ public class DefaultRetryExecutor<RESULT> implements RetryExecutor<RESULT> {
                     throw new RetryException(e);
                 }
             }
-            sleep();
+            if (!retryPolicy.interval().isZero()) {
+                sleep();
+            }
             if (result.isPresent() && retryPolicy.stopCondition().test(result.get())) {
                 break;
             }

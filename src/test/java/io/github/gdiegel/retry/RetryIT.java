@@ -86,7 +86,7 @@ class RetryIT {
                 .withMaximumExecutions(executions)
                 .withInterval(Duration.ZERO)
                 .withTimeout(Duration.ofHours(1))
-                .retryUntil(shouldStop -> false).build();
+                .build();
         final RetryExecutor<Long> retry = Retry.with(retryPolicy);
         final Optional<Long> result = retry.execute(invocationCounter::invoke);
         assertThat(result)
