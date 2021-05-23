@@ -52,6 +52,7 @@ class RetryIT {
         assertThat(execute)
                 .as("Callable was invoked zero times")
                 .isEmpty();
+        assertThat(invocationCounter.getInvocations()).isEqualTo(0L);
     }
 
     @Test
@@ -64,6 +65,7 @@ class RetryIT {
         assertThat(Retry.with(retryPolicy).execute(invocationCounter::invoke))
                 .as("One original invocation")
                 .contains(executions);
+        assertThat(invocationCounter.getInvocations()).isEqualTo(executions);
     }
 
     @Test
@@ -76,6 +78,7 @@ class RetryIT {
         assertThat(Retry.with(retryPolicy).execute(invocationCounter::invoke))
                 .as("Two original invocations")
                 .contains(executions);
+        assertThat(invocationCounter.getInvocations()).isEqualTo(executions);
     }
 
     @Test
@@ -85,7 +88,6 @@ class RetryIT {
         final var retryPolicy = RetryPolicy.<Long>builder()
                 .withMaximumExecutions(executions)
                 .withInterval(Duration.ZERO)
-                .withTimeout(Duration.ofHours(1))
                 .build();
         final RetryExecutor<Long> retry = Retry.with(retryPolicy);
         final Optional<Long> result = retry.execute(invocationCounter::invoke);
