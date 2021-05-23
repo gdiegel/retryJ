@@ -92,7 +92,7 @@ class RetryIT {
         assertThat(result)
                 .as("10000 original invocations")
                 .contains(executions);
-        assertThat(invocationCounter.getInvocations().get()).isEqualTo(executions);
+        assertThat(invocationCounter.getInvocations()).isEqualTo(executions);
     }
 
     @Test

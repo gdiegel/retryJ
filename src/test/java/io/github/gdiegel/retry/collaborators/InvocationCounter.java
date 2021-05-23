@@ -1,16 +1,17 @@
 package io.github.gdiegel.retry.collaborators;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 
 public class InvocationCounter {
 
-    private final AtomicLong invocations = new AtomicLong(0L);
+    private final LongAdder invocations = new LongAdder();
 
     public long invoke() {
-        return invocations.incrementAndGet();
+        invocations.increment();
+        return getInvocations();
     }
 
-    public AtomicLong getInvocations() {
-        return invocations;
+    public long getInvocations() {
+        return invocations.longValue();
     }
 }
