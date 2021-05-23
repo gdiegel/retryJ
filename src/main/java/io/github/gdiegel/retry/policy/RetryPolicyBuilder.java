@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
 /**
- * Allows fluently building a {@link RetryPolicy} of {@code RESULT} using sensible defaults.
+ * Allows fluently building a {@link RetryPolicy} of {@link RESULT} using sensible defaults.
  *
  * @param <RESULT> the type of the result of the computation
  * @author Gabriel Diegel
@@ -69,10 +69,10 @@ public class RetryPolicyBuilder<RESULT> {
     private boolean throwing = false;
 
     /**
-     * Return a fluent {@link RetryPolicyBuilder} of {@code RESULT}.
+     * Return a fluent {@link RetryPolicyBuilder} of {@link RESULT}.
      *
      * @param <RESULT> the type of the result of the computation
-     * @return an instance of {@link RetryPolicyBuilder} of {@code RESULT}
+     * @return an instance of {@link RetryPolicyBuilder} of {@link RESULT}
      */
     public static <RESULT> RetryPolicyBuilder<RESULT> instance() {
         return new RetryPolicyBuilder<>();
@@ -132,7 +132,7 @@ public class RetryPolicyBuilder<RESULT> {
      * the computation will be stopped and the result returned. If the predicate doesn't match the result, the
      * computation will be continued.
      *
-     * @param stopCondition a {@link Predicate} of {@code RESULT} representing a successful computation, after which
+     * @param stopCondition a {@link Predicate} of {@link RESULT} representing a successful computation, after which
      * executions should be stopped
      * @return self
      */

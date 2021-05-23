@@ -19,8 +19,8 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
- * A {@link RetryExecutor} of {@code RESULT} executes the callable passed to it and returns an {@link Optional} of
- * {@code RESULT}.
+ * A {@link RetryExecutor} of {@link RESULT} executes the {@link Callable} passed to it and returns an {@link Optional}
+ * of {@link RESULT}.
  *
  * @param <RESULT> the type of the result of the computation
  * @author Gabriel Diegel
@@ -31,7 +31,7 @@ public interface RetryExecutor<RESULT> {
      * Execute the computation by calling the {@link Callable}.
      *
      * @param callable The callable to execute
-     * @return An {@link Optional} of {@code RESULT} holding the result of the computation
+     * @return An {@link Optional} of {@link RESULT} holding the result of the computation
      */
     Optional<RESULT> execute(Callable<RESULT> callable);
 }

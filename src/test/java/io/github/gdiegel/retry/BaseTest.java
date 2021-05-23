@@ -39,5 +39,5 @@ public abstract class BaseTest {
             .throwing(true)
             .build();
 
-    protected static final RetryExecutor<Integer> RETRY = Retry.using(RETRY_POLICY);
+    protected static final RetryExecutor<Integer> RETRY_EXECUTOR = Retry.with(RETRY_POLICY);
 }

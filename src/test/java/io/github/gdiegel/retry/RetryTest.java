@@ -23,11 +23,11 @@ class RetryTest extends BaseTest {
 
     @Test
     void shouldThrowNullPointerExceptionWhenRetryPolicyIsNull() {
-        assertThatThrownBy(() -> Retry.using(null)).isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> Retry.with(null)).isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
     void shouldThrowNullPointerExceptionWhenCallableIsNull() {
-        assertThatThrownBy(() -> RETRY.execute(null)).isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> RETRY_EXECUTOR.execute(null)).isExactlyInstanceOf(NullPointerException.class);
     }
 }
