@@ -184,19 +184,6 @@ class RetryIT {
         assertThatCode(() -> retry.execute(() -> 1)).doesNotThrowAnyException();
     }
 
-    private static class ThrowOnceThenSucceed {
-        private boolean thrown = false;
-
-        String invoke() {
-            if (thrown) {
-                return "Yippie!";
-            } else {
-                thrown = true;
-                throw new RuntimeException("Pow!");
-            }
-        }
-    }
-
     private static class InvocationCounter {
         private final AtomicLong invocations = new AtomicLong(0L);
 
