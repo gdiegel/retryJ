@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DefaultRetryExecutorTest extends BaseTest {
 
     @ParameterizedTest
-    @ValueSource(ints = {0, 1, 2})
+    @ValueSource(ints = {0, 1, 2, 100000})
     void shouldExecuteZeroTimesIfMaximumExecutionsIsZero(int maximumExecutions) {
         final var retryPolicy = RetryPolicy.<Integer>builder().withMaximumExecutions(maximumExecutions).build();
         final var retryExecutor = new DefaultRetryExecutor<>(retryPolicy);

@@ -8,11 +8,10 @@ public class InvocationCounter {
 
     public long invoke() {
         invocations.increment();
-        System.out.println(getInvocations());
         return getInvocations();
     }
 
     public long getInvocations() {
-        return invocations.longValue();
+        return invocations.sum();
     }
 }
