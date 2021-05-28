@@ -5,8 +5,25 @@ retryJ is a retry library for Java. It allows executing a computation wrapped in
 matches a desired condition while ignoring certain exceptions that might be thrown along the way. It supports global
 execution limits and timeouts and allows configuring the interval between executions.
 
+Some example use cases:
+* Checking a mailbox repeatedly until an email arrives
+* Calling an unstable web resource that may fail intermittently
+* Polling a resource until it returns the desired result
+* Executing a computation until the value matches a specified exit condition
+
 ## Requirements
 Java 16+
+
+## Maven
+Include this dependency information in your `pom.xml`:
+
+```xml
+<dependency>
+  <groupId>io.github.gdiegel</groupId>
+  <artifactId>retryJ</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
 
 ## Usage
 
