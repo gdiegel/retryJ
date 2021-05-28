@@ -19,7 +19,7 @@ import java.time.Duration;
 import java.util.function.Predicate;
 
 /**
- * A {@link RetryPolicy} of {@link RESULT} allows configuring exactly how often the computation should be executed and
+ * A {@link RetryPolicy} of {@code RESULT} allows configuring exactly how often the computation should be executed and
  * under which conditions it should be aborted.
  *
  * @param <RESULT> the type of the result of the computation
@@ -30,10 +30,10 @@ public record RetryPolicy<RESULT>(Duration interval, Duration timeout, long maxi
                                   Predicate<RESULT> stopCondition, boolean throwing) {
 
     /**
-     * Return a fluent {@link RetryPolicyBuilder} of {@link RESULT}.
+     * Return a fluent {@link RetryPolicyBuilder} of {@code RESULT}.
      *
      * @param <RESULT> the type of the result of the computation
-     * @return an instance of {@link RetryPolicyBuilder} of {@link RESULT}
+     * @return an instance of {@link RetryPolicyBuilder} of {@code RESULT}
      */
     public static <RESULT> RetryPolicyBuilder<RESULT> builder() {
         return RetryPolicyBuilder.instance();

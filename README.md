@@ -1,9 +1,12 @@
 # retryJ
 [![Java CI](https://github.com/gdiegel/retryJ/actions/workflows/maven-verify.yml/badge.svg?branch=develop)](https://github.com/gdiegel/retryJ/actions/workflows/maven-verify.yml)
 
-retryJ is a micro retry library for Java. It allows executing a computation wrapped in a Callable until the result
+retryJ is a retry library for Java. It allows executing a computation wrapped in a Callable until the result
 matches a desired condition while ignoring certain exceptions that might be thrown along the way. It supports global
 execution limits and timeouts and allows configuring the interval between executions.
+
+## Requirements
+Java 16+
 
 ## Usage
 
@@ -13,7 +16,7 @@ execution limits and timeouts and allows configuring the interval between execut
 final var retryPolicy = RetryPolicy.<Double>builder()
                 .withMaximumExecutions(1L)
                 .build();
-final var result = Retry.with(retryPolicy).call(Math::random);
+final var result = Retry.with(retryPolicy).execute(Math::random);
 // result.get() => 0.570372838968257
 ```
 
@@ -39,7 +42,7 @@ final var retryPolicy = RetryPolicy.<String>builder()
                 .withMaximumExecutions(2L)
                 .ignoreWhen(exception -> exception.getClass() == RuntimeException.class)
                 .build();
-final var result = Retry.with(retryPolicy).call(tots::invoke);
+final var result = Retry.with(retryPolicy).execute(tots::invoke);
 // result.get() => "Yippie!"
 ```
 
@@ -52,7 +55,7 @@ final var retryPolicy = RetryPolicy.<Double>builder()
         .ignoreWhen(exception -> exception.getClass() == NumberFormatException.class)
         .retryUntil(d -> d <= 0.01)
         .build();
-final var result = Retry.with(retryPolicy).call(Math::random);
+final var result = Retry.with(retryPolicy).execute(Math::random);
 // result.get() => 0.09588896186808349
 ```
 

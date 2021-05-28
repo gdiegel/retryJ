@@ -24,21 +24,20 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
- * {@link Retry} allows executing a {@link Callable} of {@link RESULT} zero or more times and will return an {@link
- * Optional} of {@link RESULT} holding an instance of type {@link RESULT} of the result of the computation. Thanks to
- * Ray Holder, Jean-Baptiste Nizet and Jonathan Halterman for the inspiration.
+ * {@link Retry} allows executing a {@link Callable} of {@code RESULT} zero or more times and will return an {@link
+ * Optional} of {@code RESULT} holding an instance of type {@code RESULT} of the result of the computation.
+ * Thanks to Ray Holder, Jean-Baptiste Nizet and Jonathan Halterman for the inspiration.
  *
- * @param <RESULT> the type of the result of the computation
  * @author Gabriel Diegel
  */
-public interface Retry<RESULT> {
+public interface Retry {
 
     /**
-     * Set a {@link RetryPolicy} of {@link RESULT} for the computation.
+     * Set a {@link RetryPolicy} of {@code RESULT} for the computation.
      *
      * @param retryPolicy the retry policy to use when executing the computation
      * @param <RESULT> the type of the result of the computation
-     * @return An instance of {@link RetryExecutor} of {@link RESULT}
+     * @return An instance of {@link RetryExecutor} of {@code RESULT}
      */
     static <RESULT> RetryExecutor<RESULT> with(RetryPolicy<RESULT> retryPolicy) {
         Preconditions.checkNotNull(retryPolicy);

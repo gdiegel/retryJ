@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
 /**
- * Allows fluently building a {@link RetryPolicy} of {@link RESULT} using sensible defaults.
+ * Allows fluently building a {@link RetryPolicy} of {@code RESULT} using sensible defaults.
  *
  * @param <RESULT> the type of the result of the computation
  * @author Gabriel Diegel
@@ -69,10 +69,10 @@ public class RetryPolicyBuilder<RESULT> {
     private boolean throwing = false;
 
     /**
-     * Return a fluent {@link RetryPolicyBuilder} of {@link RESULT}.
+     * Return a fluent {@link RetryPolicyBuilder} of {@code RESULT}.
      *
      * @param <RESULT> the type of the result of the computation
-     * @return an instance of {@link RetryPolicyBuilder} of {@link RESULT}
+     * @return an instance of {@link RetryPolicyBuilder} of {@code RESULT}
      */
     public static <RESULT> RetryPolicyBuilder<RESULT> instance() {
         return new RetryPolicyBuilder<>();
@@ -128,11 +128,11 @@ public class RetryPolicyBuilder<RESULT> {
     }
 
     /**
-     * Add predicate which will evaluated on {@link RESULT} after every execution. If the predicate matches the result,
-     * the computation will be stopped and the result returned. If the predicate doesn't match the result, the
-     * computation will be continued.
+     * Add predicate which will be evaluated on {@code RESULT} after every execution. If the predicate matches the
+     * result, the computation will be stopped and the result will be returned. If the predicate doesn't match the
+     * result, the computation will be continued.
      *
-     * @param stopCondition a {@link Predicate} of {@link RESULT} representing a successful computation, after which
+     * @param stopCondition a {@link Predicate} of {@code RESULT} representing a successful computation, after which
      * executions should be stopped
      * @return self
      */
@@ -144,7 +144,7 @@ public class RetryPolicyBuilder<RESULT> {
 
     /**
      * @param throwing Throw {@link RetriesExhaustedException} instead of returning the result when retries are
-     * exhausted.
+     * exhausted
      * @return self
      */
     public RetryPolicyBuilder<RESULT> throwing(boolean throwing) {
@@ -155,7 +155,7 @@ public class RetryPolicyBuilder<RESULT> {
     /**
      * Build the {@link RetryPolicy} and return it.
      *
-     * @return An instance of {@link RetryPolicy} of {@link RESULT}
+     * @return An instance of {@link RetryPolicy} of {@code RESULT}
      */
     public RetryPolicy<RESULT> build() {
         return new RetryPolicy<>(this.interval, this.timeout, this.maximumExecutions, this.ignorableException, this.stopCondition, this.throwing);

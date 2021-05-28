@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.LongAdder;
 import static java.time.LocalTime.now;
 
 /**
- * Default implementation of {@link RetryExecutor} of {@link RESULT}. Follows a {@link RetryPolicy} when executing the
+ * Default implementation of {@link RetryExecutor} of {@code RESULT}. Follows a {@link RetryPolicy} when executing the
  * computation.
  *
  * @param <RESULT> the type of the result of the computation
@@ -44,7 +44,7 @@ public class DefaultRetryExecutor<RESULT> implements RetryExecutor<RESULT> {
     private final LongAdder currentExecutions = new LongAdder();
 
     /**
-     * Construct an instance of {@link DefaultRetryExecutor} accepting a {@link RetryPolicy} of {@link RESULT}
+     * Construct an instance of {@link DefaultRetryExecutor} accepting a {@link RetryPolicy} of {@code RESULT}
      *
      * @param retryPolicy The {@link RetryPolicy} to use for the computation
      */
