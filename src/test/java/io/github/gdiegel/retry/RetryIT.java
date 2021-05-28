@@ -42,17 +42,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 class RetryIT {
 
     @Test
-    void should() {
-        final var tots = new ThrowOnceThenSucceed();
-        final var retryPolicy = RetryPolicy.<String>builder()
-                .withMaximumExecutions(2L)
-                .ignoreWhen(exception -> exception.getClass() == RuntimeException.class)
-                .build();
-        final var result = Retry.with(retryPolicy).execute(tots::invoke);
-        System.out.println(result.get());
-    }
-
-    @Test
     void shouldReturnEmptyOptionalWhenZeroExecutionsAreConfigured() {
         final InvocationCounter invocationCounter = new InvocationCounter();
         final var retryPolicy = RetryPolicy.<Long>builder()
