@@ -37,18 +37,18 @@ public class RetryPolicyBuilder<RESULT> {
     private static final String MAXIMUM_EXECUTIONS_FORMAT = "Maximum executions: [%s]";
 
     /**
-     * Default: Interval of 10 milliseconds between executions
+     * Default: Interval of 10 milliseconds between executions.
      */
     private Duration interval = Duration.ofMillis(10);
 
     /**
-     * Default: 30 second timeout
+     * Default: 30 second timeout.
      */
     private Duration timeout = Duration.ofSeconds(30);
 
     /**
      * Default: No upper bound, will retry run until a stop condition occurs, a non-ignorable exception is thrown or the
-     * given timeout is reached
+     * given timeout is reached.
      */
     private long maximumExecutions = -1;
 
@@ -64,7 +64,7 @@ public class RetryPolicyBuilder<RESULT> {
     private Predicate<RESULT> stopCondition = result -> false;
 
     /**
-     * Default: Don't throw {@link RetriesExhaustedException}
+     * Default: Don't throw {@link RetriesExhaustedException}.
      */
     private boolean throwing = false;
 
@@ -152,6 +152,11 @@ public class RetryPolicyBuilder<RESULT> {
         return this;
     }
 
+    /**
+     * Build the {@link RetryPolicy} and return it.
+     *
+     * @return An instance of {@link RetryPolicy} of {@link RESULT}
+     */
     public RetryPolicy<RESULT> build() {
         return new RetryPolicy<>(this.interval, this.timeout, this.maximumExecutions, this.ignorableException, this.stopCondition, this.throwing);
     }

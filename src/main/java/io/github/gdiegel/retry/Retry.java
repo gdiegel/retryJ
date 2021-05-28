@@ -33,6 +33,13 @@ import java.util.concurrent.Callable;
  */
 public interface Retry<RESULT> {
 
+    /**
+     * Set a {@link RetryPolicy} of {@link RESULT} for the computation.
+     *
+     * @param retryPolicy the retry policy to use when executing the computation
+     * @param <RESULT> the type of the result of the computation
+     * @return An instance of {@link RetryExecutor} of {@link RESULT}
+     */
     static <RESULT> RetryExecutor<RESULT> with(RetryPolicy<RESULT> retryPolicy) {
         Preconditions.checkNotNull(retryPolicy);
         return new DefaultRetryExecutor<>(retryPolicy);

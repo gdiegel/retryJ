@@ -22,6 +22,11 @@ package io.github.gdiegel.retry.exception;
  */
 public class RetryException extends RuntimeException {
 
+    /**
+     * Construct a new {@link RetryException}
+     *
+     * @param cause The cause to use for this exception
+     */
     public RetryException(Exception cause) {
         super(cause);
     }

@@ -22,6 +22,11 @@ package io.github.gdiegel.retry.exception;
  */
 public class RetriesExhaustedException extends RuntimeException {
 
+    /**
+     * Construct a new {@link RetriesExhaustedException}
+     *
+     * @param message The message to use for this exception
+     */
     public RetriesExhaustedException(String message) {
         super(message);
     }

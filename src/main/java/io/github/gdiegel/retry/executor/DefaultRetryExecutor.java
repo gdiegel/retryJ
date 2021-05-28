@@ -43,10 +43,18 @@ public class DefaultRetryExecutor<RESULT> implements RetryExecutor<RESULT> {
     private LocalTime startTime;
     private final LongAdder currentExecutions = new LongAdder();
 
+    /**
+     * Construct an instance of {@link DefaultRetryExecutor} accepting a {@link RetryPolicy} of {@link RESULT}
+     *
+     * @param retryPolicy The {@link RetryPolicy} to use for the computation
+     */
     public DefaultRetryExecutor(RetryPolicy<RESULT> retryPolicy) {
         this.retryPolicy = retryPolicy;
     }
 
+    /**
+     * @return The number of executions that have been performed so far during the computation
+     */
     @VisibleForTesting
     public long getCurrentExecutions() {
         return currentExecutions.sum();
