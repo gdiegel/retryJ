@@ -1,5 +1,6 @@
 # retryJ
 [![Java CI](https://github.com/gdiegel/retryJ/actions/workflows/maven-verify.yml/badge.svg?branch=develop)](https://github.com/gdiegel/retryJ/actions/workflows/maven-verify.yml)
+[![Downloads](https://img.shields.io/github/downloads/gdiegel/retryJ/total?style=for-the-badge)](https://img.shields.io/github/downloads/gdiegel/retryJ/total?style=for-the-badge)
 
 retryJ is a retry library for Java. It allows executing a computation wrapped in a Callable until the result
 matches a desired condition while ignoring certain exceptions that might be thrown along the way. It supports global
