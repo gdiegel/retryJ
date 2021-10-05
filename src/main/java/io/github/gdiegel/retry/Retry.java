@@ -25,8 +25,8 @@ import java.util.concurrent.Callable;
 
 /**
  * {@link Retry} allows executing a {@link Callable} of {@code RESULT} zero or more times and will return an {@link
- * Optional} of {@code RESULT} holding an instance of type {@code RESULT} of the result of the computation.
- * Thanks to Ray Holder, Jean-Baptiste Nizet and Jonathan Halterman for the inspiration.
+ * Optional} of {@code RESULT} holding an instance of type {@code RESULT} of the result of the computation. Thanks to
+ * Ray Holder, Jean-Baptiste Nizet and Jonathan Halterman for the inspiration.
  *
  * @author Gabriel Diegel
  */

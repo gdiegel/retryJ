@@ -44,12 +44,12 @@ class RetryPolicyTest extends BaseTest {
     void canCreateInstanceOfRetryPolicyViaBuilder() {
         final RetryPolicyBuilder<Integer> builder = RetryPolicy.builder();
         final RetryPolicy<Integer> retryPolicy = builder.withInterval(INTERVAL)
-                .withTimeout(TIMEOUT)
-                .withMaximumExecutions(MAXIMUM_EXECUTIONS)
-                .ignoreWhen(IGNORABLE_EXCEPTION)
-                .retryUntil(STOP_CONDITION)
-                .throwing(true)
-                .build();
+            .withTimeout(TIMEOUT)
+            .withMaximumExecutions(MAXIMUM_EXECUTIONS)
+            .ignoreWhen(IGNORABLE_EXCEPTION)
+            .retryUntil(STOP_CONDITION)
+            .throwing(true)
+            .build();
         assertThat(retryPolicy).isNotNull();
         assertThat(retryPolicy.interval()).isEqualTo(INTERVAL);
         assertThat(retryPolicy.timeout()).isEqualTo(TIMEOUT);

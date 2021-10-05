@@ -39,9 +39,8 @@ public final class DefaultRetryExecutor<RESULT> implements RetryExecutor<RESULT>
 
     private static final String RETRIES_OR_EXECUTIONS_EXHAUSTED = "Retries or executions exhausted";
     private final RetryPolicy<RESULT> retryPolicy;
-
-    private LocalTime startTime;
     private final LongAdder currentExecutions = new LongAdder();
+    private LocalTime startTime;
 
     /**
      * Construct an instance of {@link DefaultRetryExecutor} accepting a {@link RetryPolicy} of {@code RESULT}

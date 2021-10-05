@@ -45,13 +45,13 @@ class RetryIT {
     void shouldReturnEmptyOptionalWhenZeroExecutionsAreConfigured() {
         final InvocationCounter invocationCounter = new InvocationCounter();
         final var retryPolicy = RetryPolicy.<Long>builder()
-                .withMaximumExecutions(0L)
-                .build();
+            .withMaximumExecutions(0L)
+            .build();
         final RetryExecutor<Long> retry = Retry.with(retryPolicy);
         final Optional<Long> execute = retry.execute(invocationCounter::invoke);
         assertThat(execute)
-                .as("Callable was invoked zero times")
-                .isEmpty();
+            .as("Callable was invoked zero times")
+            .isEmpty();
         assertThat(invocationCounter.getInvocations()).isEqualTo(0L);
     }
 
@@ -60,11 +60,11 @@ class RetryIT {
         final InvocationCounter invocationCounter = new InvocationCounter();
         final var executions = 1L;
         final var retryPolicy = RetryPolicy.<Long>builder()
-                .withMaximumExecutions(executions)
-                .build();
+            .withMaximumExecutions(executions)
+            .build();
         assertThat(Retry.with(retryPolicy).execute(invocationCounter::invoke))
-                .as("One original invocation")
-                .contains(executions);
+            .as("One original invocation")
+            .contains(executions);
         assertThat(invocationCounter.getInvocations()).isEqualTo(executions);
     }
 
@@ -73,11 +73,11 @@ class RetryIT {
         final InvocationCounter invocationCounter = new InvocationCounter();
         final var executions = 2L;
         final var retryPolicy = RetryPolicy.<Long>builder()
-                .withMaximumExecutions(executions)
-                .build();
+            .withMaximumExecutions(executions)
+            .build();
         assertThat(Retry.with(retryPolicy).execute(invocationCounter::invoke))
-                .as("Two original invocations")
-                .contains(executions);
+            .as("Two original invocations")
+            .contains(executions);
         assertThat(invocationCounter.getInvocations()).isEqualTo(executions);
     }
 
@@ -86,71 +86,71 @@ class RetryIT {
         final InvocationCounter invocationCounter = new InvocationCounter();
         final var executions = 10000L;
         final var retryPolicy = RetryPolicy.<Long>builder()
-                .withMaximumExecutions(executions)
-                .withInterval(Duration.ZERO)
-                .build();
+            .withMaximumExecutions(executions)
+            .withInterval(Duration.ZERO)
+            .build();
         final RetryExecutor<Long> retry = Retry.with(retryPolicy);
         final Optional<Long> result = retry.execute(invocationCounter::invoke);
         assertThat(result)
-                .as("10000 original invocations")
-                .contains(executions);
+            .as("10000 original invocations")
+            .contains(executions);
         assertThat(invocationCounter.getInvocations()).isEqualTo(executions);
     }
 
     @Test
     void shouldBeAbleToRetryUntilStopConditionEvaluatesToTrue() {
         final var retryPolicy = RetryPolicy.<Double>builder()
-                .withInterval(Duration.of(100, NANOS))
-                .withTimeout(Duration.of(1, MINUTES))
-                .ignoreWhen(e -> e.getClass().equals(NumberFormatException.class))
-                .retryUntil(d -> d <= 0.01)
-                .build();
+            .withInterval(Duration.of(100, NANOS))
+            .withTimeout(Duration.of(1, MINUTES))
+            .ignoreWhen(e -> e.getClass().equals(NumberFormatException.class))
+            .retryUntil(d -> d <= 0.01)
+            .build();
         assertThat(Retry.with(retryPolicy).execute(Math::random))
-                .isPresent()
-                .get(InstanceOfAssertFactories.DOUBLE).isLessThan(0.01);
+            .isPresent()
+            .get(InstanceOfAssertFactories.DOUBLE).isLessThan(0.01);
     }
 
     @Test
     void shouldBeAbleToRetryOnPredicateEvaluatingToTrue() {
         final var sp = new StringProvider();
         final var retryPolicy = RetryPolicy.<Character>builder()
-                .retryUntil(c -> c.equals('d'))
-                .build();
+            .retryUntil(c -> c.equals('d'))
+            .build();
         assertThat(Retry.with(retryPolicy).execute(sp::getNextChar))
-                .as("Will retry the iteration through the string until the character 'd' is reached")
-                .isPresent()
-                .get(InstanceOfAssertFactories.CHARACTER).isEqualTo('d');
+            .as("Will retry the iteration through the string until the character 'd' is reached")
+            .isPresent()
+            .get(InstanceOfAssertFactories.CHARACTER).isEqualTo('d');
     }
 
     @Test
     void shouldBeAbleToRetryWhenIgnorableExceptionIsThrown() {
         final var tots = new ThrowOnceThenSucceed();
         final var retryPolicy = RetryPolicy.<String>builder()
-                .withMaximumExecutions(2)
-                .ignoreWhen(exception -> exception.getClass() == RuntimeException.class).build();
+            .withMaximumExecutions(2)
+            .ignoreWhen(exception -> exception.getClass() == RuntimeException.class).build();
         assertThat(Retry.with(retryPolicy).execute(tots::invoke))
-                .isPresent().get(InstanceOfAssertFactories.STRING)
-                .isEqualTo("Yippie!");
+            .isPresent().get(InstanceOfAssertFactories.STRING)
+            .isEqualTo("Yippie!");
     }
 
     @SuppressWarnings({"divzero", "NumericOverflow"})
     @Test
     void shouldThrowRetryExceptionOnNonIgnorableException() {
         final var retryPolicy = RetryPolicy.<Integer>builder()
-                .ignoreWhen(e -> e.getClass().equals(RuntimeException.class))
-                .build();
+            .ignoreWhen(e -> e.getClass().equals(RuntimeException.class))
+            .build();
         final Callable<Integer> causesException = () -> 1 / 0;
         assertThatThrownBy(() -> Retry.with(retryPolicy).execute(causesException)).isExactlyInstanceOf(RetryException.class)
-                .hasCauseInstanceOf(ArithmeticException.class);
+            .hasCauseInstanceOf(ArithmeticException.class);
     }
 
     @Test
     void shouldThrowRetriesExhaustedExceptionWhenTimeoutReached() {
         final var retryPolicy = RetryPolicy.<Integer>builder()
-                .withInterval(Duration.ZERO)
-                .withTimeout(Duration.of(5, SECONDS))
-                .throwing(true)
-                .build();
+            .withInterval(Duration.ZERO)
+            .withTimeout(Duration.of(5, SECONDS))
+            .throwing(true)
+            .build();
         final RetryExecutor<Integer> retry = Retry.with(retryPolicy);
         final Stopwatch started = Stopwatch.createStarted();
         assertThatThrownBy(() -> retry.execute(() -> 1)).isExactlyInstanceOf(RetriesExhaustedException.class);
@@ -162,19 +162,19 @@ class RetryIT {
     void shouldThrowRetriesExhaustedExceptionWhenRetriesUp() {
         final long executions = 10L;
         final var retryPolicy = RetryPolicy.<Integer>builder()
-                .withMaximumExecutions(executions)
-                .throwing(true)
-                .build();
+            .withMaximumExecutions(executions)
+            .throwing(true)
+            .build();
         final RetryExecutor<Integer> retry = Retry.with(retryPolicy);
         assertThatThrownBy(() -> retry.execute(() -> 1))
-                .isExactlyInstanceOf(RetriesExhaustedException.class);
+            .isExactlyInstanceOf(RetriesExhaustedException.class);
     }
 
     @Test
     void shouldNotThrowRetriesExhaustedExceptionWhenSilencedAndTimeoutReached() {
         final var retryPolicy = RetryPolicy.<Integer>builder()
-                .withTimeout(Duration.of(1, SECONDS))
-                .build();
+            .withTimeout(Duration.of(1, SECONDS))
+            .build();
         assertThatCode(() -> Retry.with(retryPolicy).execute(() -> 1)).doesNotThrowAnyException();
     }
 
@@ -182,8 +182,8 @@ class RetryIT {
     void shouldNotThrowRetriesExhaustedExceptionWhenSilencedAndRetriesUp() {
         final long executions = 10L;
         final var retryPolicy = RetryPolicy.<Integer>builder()
-                .withMaximumExecutions(executions)
-                .build();
+            .withMaximumExecutions(executions)
+            .build();
         final RetryExecutor<Integer> retry = Retry.with(retryPolicy);
         assertThatCode(() -> retry.execute(() -> 1)).doesNotThrowAnyException();
     }
