@@ -13,7 +13,7 @@ Some example use cases:
 * Executing a computation until the value matches a specified exit condition
 
 ## Requirements
-Java 16+
+Java 17+
 
 ## Maven
 Include this dependency information in your `pom.xml`:
