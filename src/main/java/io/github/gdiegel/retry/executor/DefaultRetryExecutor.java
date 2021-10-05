@@ -35,7 +35,7 @@ import static java.time.LocalTime.now;
  * @param <RESULT> the type of the result of the computation
  * @author Gabriel Diegel
  */
-public class DefaultRetryExecutor<RESULT> implements RetryExecutor<RESULT> {
+public final class DefaultRetryExecutor<RESULT> implements RetryExecutor<RESULT> {
 
     private static final String RETRIES_OR_EXECUTIONS_EXHAUSTED = "Retries or executions exhausted";
     private final RetryPolicy<RESULT> retryPolicy;

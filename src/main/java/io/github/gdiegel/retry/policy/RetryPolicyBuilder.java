@@ -90,7 +90,7 @@ public class RetryPolicyBuilder<RESULT> {
     }
 
     /**
-     * @param timeout a {@link Duration} representing the absolute timeout after which executions will considered to be
+     * @param timeout a {@link Duration} representing the absolute timeout after which executions will be considered
      * exhausted and aborted
      * @return self
      */
@@ -102,8 +102,8 @@ public class RetryPolicyBuilder<RESULT> {
     }
 
     /**
-     * @param maximumExecutions a long representing the absolute number of executions after which executions will
-     * considered to be exhausted and aborted.
+     * @param maximumExecutions a long representing the absolute number of executions after which executions will be
+     * considered exhausted and aborted.
      * @return self
      */
     public RetryPolicyBuilder<RESULT> withMaximumExecutions(long maximumExecutions) {
