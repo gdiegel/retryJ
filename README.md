@@ -18,16 +18,15 @@ Some example use cases:
 
 Java 17+
 
-## Maven
+## Install
 
-Include this dependency information in your `pom.xml`:
+retryJ is on Maven Central. To use it, include this dependency information in your `pom.xml`:
 
 ```xml
-
 <dependency>
     <groupId>io.github.gdiegel</groupId>
     <artifactId>retryJ</artifactId>
-    <version>1.0.0</version>
+    <version>${LATEST_VERSION}</version>
 </dependency>
 ```
 
