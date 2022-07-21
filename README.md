@@ -35,10 +35,10 @@ retryJ is on Maven Central. To use it, include this dependency information in yo
 ### Execute once and return the result:
 
 ```java
-final var retryPolicy=RetryPolicy.<Double>builder()
+final RetryPolicy<Double> retryPolicy = RetryPolicy.<Double>builder()
     .withMaximumExecutions(1L)
     .build();
-final var result=Retry.with(retryPolicy).execute(Math::random);
+final Optional<Double> result = Retry.with(retryPolicy).execute(Math::random);
 // result.get() => 0.570372838968257
 ```
 
@@ -60,25 +60,25 @@ class ThrowOnceThenSucceed {
 ```
 
 ```java
-final var tots=new ThrowOnceThenSucceed();
-final var retryPolicy=RetryPolicy.<String>builder()
+final ThrowOnceThenSucceed tots = new ThrowOnceThenSucceed();
+final RetryPolicy<String> retryPolicy = RetryPolicy.<String>builder()
     .withMaximumExecutions(2L)
-    .ignoreWhen(exception->exception.getClass()==RuntimeException.class)
+    .ignoreWhen(exception -> exception.getClass() == RuntimeException.class)
     .build();
-final var result=Retry.with(retryPolicy).execute(tots::invoke);
+final Optional<String> result = Retry.with(retryPolicy).execute(tots::invoke);
 // result.get() => "Yippie!"
 ```
 
 ### Execute every 100 nanoseconds for a maximum of one minute until the result is smaller than or equal to 0.01 while ignoring `NumberFormatException`:
 
 ```java
-final var retryPolicy=RetryPolicy.<Double>builder()
+final RetryPolicy<Double> retryPolicy = RetryPolicy.<Double>builder()
     .withInterval(Duration.of(100,NANOS))
     .withTimeout(Duration.of(1,MINUTES))
-    .ignoreWhen(exception->exception.getClass()==NumberFormatException.class)
-    .retryUntil(d->d<=0.01)
+    .ignoreWhen(exception -> exception.getClass() == NumberFormatException.class)
+    .retryUntil(d -> d <= 0.01)
     .build();
-final var result=Retry.with(retryPolicy).execute(Math::random);
+final Optional<Double> result = Retry.with(retryPolicy).execute(Math::random);
 // result.get() => 0.09588896186808349
 ```
 
