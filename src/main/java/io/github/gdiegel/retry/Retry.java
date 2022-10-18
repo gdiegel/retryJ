@@ -36,10 +36,10 @@ public interface Retry {
      * Set a {@link RetryPolicy} of {@code RESULT} for the computation.
      *
      * @param retryPolicy the retry policy to use when executing the computation
-     * @param <RESULT> the type of the result of the computation
+     * @param <RESULT>    the type of the result of the computation
      * @return An instance of {@link RetryExecutor} of {@code RESULT}
      */
-    static <RESULT> RetryExecutor<RESULT> with(RetryPolicy<RESULT> retryPolicy) {
+    static <RESULT> RetryExecutor<RESULT> with(final RetryPolicy<RESULT> retryPolicy) {
         Preconditions.checkNotNull(retryPolicy);
         return new DefaultRetryExecutor<>(retryPolicy);
     }

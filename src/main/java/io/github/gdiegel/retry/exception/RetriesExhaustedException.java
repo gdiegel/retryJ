@@ -27,7 +27,7 @@ public class RetriesExhaustedException extends RuntimeException {
      *
      * @param message The message to use for this exception
      */
-    public RetriesExhaustedException(String message) {
+    public RetriesExhaustedException(final String message) {
         super(message);
     }
 

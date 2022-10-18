@@ -27,7 +27,7 @@ public class RetryException extends RuntimeException {
      *
      * @param cause The cause to use for this exception
      */
-    public RetryException(Exception cause) {
+    public RetryException(final Exception cause) {
         super(cause);
     }
 

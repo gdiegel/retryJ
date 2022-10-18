@@ -47,7 +47,7 @@ public final class DefaultRetryExecutor<RESULT> implements RetryExecutor<RESULT>
      *
      * @param retryPolicy The {@link RetryPolicy} to use for the computation
      */
-    public DefaultRetryExecutor(RetryPolicy<RESULT> retryPolicy) {
+    public DefaultRetryExecutor(final RetryPolicy<RESULT> retryPolicy) {
         this.retryPolicy = retryPolicy;
     }
 
@@ -60,21 +60,21 @@ public final class DefaultRetryExecutor<RESULT> implements RetryExecutor<RESULT>
     }
 
     @Override
-    public Optional<RESULT> execute(Callable<RESULT> callable) {
+    public Optional<RESULT> execute(final Callable<RESULT> callable) {
         if (retryPolicy.maximumExecutions() == 0) {
             return Optional.empty();
         }
         return doExecute(callable);
     }
 
-    private Optional<RESULT> doExecute(Callable<RESULT> callable) {
+    private Optional<RESULT> doExecute(final Callable<RESULT> callable) {
         Optional<RESULT> result = Optional.empty();
         setStartTime();
         do {
             try {
                 currentExecutions.increment();
                 result = Optional.ofNullable(callable.call());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 if (!retryPolicy.ignorableException().test(e)) {
                     throw new RetryException(e);
                 }
@@ -111,7 +111,7 @@ public final class DefaultRetryExecutor<RESULT> implements RetryExecutor<RESULT>
     private void sleep() {
         try {
             TimeUnit.NANOSECONDS.sleep(retryPolicy.interval().toNanos());
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }

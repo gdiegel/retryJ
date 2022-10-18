@@ -32,12 +32,12 @@ public abstract class BaseTest {
     protected static final boolean THROWING = true;
 
     protected static final RetryPolicy<Integer> RETRY_POLICY = RetryPolicy.<Integer>builder().withInterval(INTERVAL)
-        .withTimeout(TIMEOUT)
-        .withMaximumExecutions(MAXIMUM_EXECUTIONS)
-        .ignoreWhen(IGNORABLE_EXCEPTION)
-        .retryUntil(STOP_CONDITION)
-        .throwing(true)
-        .build();
+            .withTimeout(TIMEOUT)
+            .withMaximumExecutions(MAXIMUM_EXECUTIONS)
+            .ignoreWhen(IGNORABLE_EXCEPTION)
+            .retryUntil(STOP_CONDITION)
+            .throwing(true)
+            .build();
 
     protected static final RetryExecutor<Integer> RETRY_EXECUTOR = Retry.with(RETRY_POLICY);
 }

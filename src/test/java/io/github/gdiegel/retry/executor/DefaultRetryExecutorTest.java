@@ -16,7 +16,7 @@ class DefaultRetryExecutorTest extends BaseTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2})
-    void shouldExecuteZeroTimesIfMaximumExecutionsIsZero(int maximumExecutions) {
+    void shouldExecuteZeroTimesIfMaximumExecutionsIsZero(final int maximumExecutions) {
         final RetryPolicy<Integer> retryPolicy = RetryPolicy.<Integer>builder().withMaximumExecutions(maximumExecutions).build();
         final DefaultRetryExecutor<Integer> retryExecutor = new DefaultRetryExecutor<>(retryPolicy);
         retryExecutor.execute(IDEMPOTENT_CALLABLE);
